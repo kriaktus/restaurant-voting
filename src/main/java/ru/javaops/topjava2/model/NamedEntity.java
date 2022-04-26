@@ -1,9 +1,6 @@
 package ru.javaops.topjava2.model;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import ru.javaops.topjava2.util.validation.NoHtml;
 
 import javax.persistence.Column;
@@ -15,6 +12,7 @@ import javax.validation.constraints.Size;
 @MappedSuperclass
 @Getter
 @Setter
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class NamedEntity extends BaseEntity {
 
