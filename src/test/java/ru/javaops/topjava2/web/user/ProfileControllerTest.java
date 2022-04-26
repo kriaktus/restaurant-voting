@@ -18,8 +18,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.javaops.topjava2.test_data.UserTestData.*;
 import static ru.javaops.topjava2.web.user.ProfileController.REST_URL;
-import static ru.javaops.topjava2.web.user.UserTestData.*;
 
 class ProfileControllerTest extends AbstractControllerTest {
 
@@ -46,7 +46,7 @@ class ProfileControllerTest extends AbstractControllerTest {
     void delete() throws Exception {
         perform(MockMvcRequestBuilders.delete(REST_URL))
                 .andExpect(status().isNoContent());
-        USER_MATCHER.assertMatch(userRepository.findAll(), admin);
+        USER_MATCHER.assertMatch(userRepository.findAll(), admin, user2);
     }
 
     @Test
