@@ -31,7 +31,6 @@ public class Dish extends BaseEntity implements HasId {
     private Integer cost;
 
     @Column(name = "restaurant_id", nullable = false)
-    @NotNull
     private Integer restaurantId;
 
     public Dish(Integer id, String title, Integer cost, Integer restaurantId) {

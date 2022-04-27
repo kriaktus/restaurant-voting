@@ -6,7 +6,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javaops.topjava2.model.Dish;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
+import java.util.Optional;
 
 @Transactional(readOnly = true)
 public interface DishRepository extends BaseRepository<Dish> {
@@ -26,4 +30,6 @@ public interface DishRepository extends BaseRepository<Dish> {
     @Modifying
     @Query("DELETE FROM Dish d WHERE d.restaurantId =:restaurantId")
     int deleteAllByRestaurantId(@Param("restaurantId") int restaurantId);
+
+    Optional<Dish> findByTitleAndRestaurantId(@NotBlank @Size(min = 2, max = 100) String title, @NotNull Integer restaurantId);
 }

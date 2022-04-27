@@ -5,6 +5,7 @@ import org.springframework.core.NestedExceptionUtils;
 import org.springframework.lang.NonNull;
 import ru.javaops.topjava2.HasId;
 import ru.javaops.topjava2.error.IllegalRequestDataException;
+import ru.javaops.topjava2.model.Dish;
 
 @UtilityClass
 public class ValidationUtil {
@@ -21,6 +22,20 @@ public class ValidationUtil {
             bean.setId(id);
         } else if (bean.id() != id) {
             throw new IllegalRequestDataException(bean.getClass().getSimpleName() + " must has id=" + id);
+        }
+    }
+
+    public static void assureRestaurantIdConsistent(Dish dish, int restaurantId) {
+        if (dish.getRestaurantId() == null) {
+            dish.setRestaurantId(restaurantId);
+        } else if (dish.id() != restaurantId) {
+            throw new IllegalRequestDataException(dish.getClass().getSimpleName() + " must has restaurantId=" + restaurantId);
+        }
+    }
+
+    public static void checkModification(int count) {
+        if (count == 0) {
+            throw new IllegalRequestDataException("Not found entity for modify");
         }
     }
 
