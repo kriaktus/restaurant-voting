@@ -26,7 +26,7 @@ public class UniqueDishValidator implements Validator {
     @Override
     public void validate(@NonNull Object target, @NonNull Errors errors) {
         Dish dish = (Dish) target;
-        String requestURI = request.getServletPath();
+        String requestURI = request.getRequestURI();
         try {
             ValidationUtil.assureRestaurantIdConsistent(dish, Integer.parseInt(requestURI.split("/")[4]));
         } catch (NumberFormatException nfe) {

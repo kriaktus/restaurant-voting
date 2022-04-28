@@ -1,9 +1,9 @@
 package ru.javaops.topjava2.web.dish;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javaops.topjava2.model.Dish;
@@ -19,14 +19,15 @@ public class AdminDishController extends AbstractDishController {
     public static final String REST_URL = "/api/admin/restaurants/{restaurantId}/dishes";
 
     @GetMapping("/{id}")
-    public Dish get(@PathVariable int id, @PathVariable int restaurantId) {
+    public ResponseEntity<Dish> get(@PathVariable int id, @PathVariable int restaurantId) {
         log.info("AdminDishController#get(id:{}, restaurantId:{})", id, restaurantId);
-        return dishRepository.get(id, restaurantId);
+        Dish dish = dishRepository.get(id, restaurantId);
+        return dish == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(dish);
     }
 
     @PostMapping
-    public ResponseEntity<Dish> create(@Valid @RequestBody Dish dish, @PathVariable int restaurantId, BindingResult bindingResult) {
-        log.info("AdminDishController#create(dish:{}, restaurantId:{}, bindingResult.hasErrors():{})", dish, restaurantId, bindingResult.hasErrors());
+    public ResponseEntity<Dish> create(@Valid @RequestBody Dish dish, @PathVariable int restaurantId) {
+        log.info("AdminDishController#create(dish:{}, restaurantId:{})", dish, restaurantId);
         ValidationUtil.checkNew(dish);
         Dish created = dishRepository.save(dish);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -44,12 +45,14 @@ public class AdminDishController extends AbstractDishController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id, @PathVariable int restaurantId) {
         log.info("AdminDishController#delete(id:{}, restaurantId:{})", id, restaurantId);
         ValidationUtil.checkModification(dishRepository.delete(id, restaurantId), id);
     }
 
     @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAllByRestaurantId(@PathVariable int restaurantId) {
         log.info("AdminDishController#deleteAllByRestaurantId(restaurantId:{})", restaurantId);
         ValidationUtil.checkModification(dishRepository.deleteAllByRestaurantId(restaurantId));

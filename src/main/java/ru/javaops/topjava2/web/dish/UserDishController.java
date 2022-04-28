@@ -2,6 +2,7 @@ package ru.javaops.topjava2.web.dish;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +19,9 @@ public class UserDishController extends AbstractDishController {
     public static final String REST_URL = "/api/restaurants/{restaurantId}/dishes";
 
     @GetMapping
-    public List<Dish> getAllByRestaurant(@PathVariable int restaurantId) {
+    public ResponseEntity<List<Dish>> getAllByRestaurant(@PathVariable int restaurantId) {
         log.info("UserDishController#getAllByRestaurant(restaurantId:{})", restaurantId);
-        return dishRepository.getAllByRestaurantId(restaurantId);
+        List<Dish> dishes = dishRepository.getAllByRestaurantId(restaurantId);
+        return dishes.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dishes);
     }
 }

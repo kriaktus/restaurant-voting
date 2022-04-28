@@ -8,6 +8,7 @@ import ru.javaops.topjava2.model.Dish;
 
 import javax.validation.ConstraintViolationException;
 import java.util.List;
+import java.util.Optional;
 
 import static ru.javaops.topjava2.test_data.DishTestData.*;
 import static ru.javaops.topjava2.test_data.RestaurantTestData.RESTAURANT1_ID;
@@ -92,8 +93,6 @@ public class DishRepositoryTest extends AbstractRepositoryTest {
 
     @Test
     public void createWithConstraintException() {
-        Assertions.assertThrows(ConstraintViolationException.class, () -> dishRepository.save(new Dish("Дим самы с телячими хвостами", 550, null)));
-
         Assertions.assertThrows(ConstraintViolationException.class, () -> dishRepository.save(new Dish(null, 550, RESTAURANT1_ID)));
         Assertions.assertThrows(ConstraintViolationException.class, () -> dishRepository.save(new Dish("", 550, RESTAURANT1_ID)));
         Assertions.assertThrows(ConstraintViolationException.class, () -> dishRepository.save(new Dish("      ", 550, RESTAURANT1_ID)));
@@ -102,5 +101,11 @@ public class DishRepositoryTest extends AbstractRepositoryTest {
 
         Assertions.assertThrows(ConstraintViolationException.class, () -> dishRepository.save(new Dish("Дим самы с телячими хвостами", null, RESTAURANT1_ID)));
         Assertions.assertThrows(ConstraintViolationException.class, () -> dishRepository.save(new Dish("Дим самы с телячими хвостами", -25, RESTAURANT1_ID)));
+    }
+
+    @Test
+    public void findByTitleAndRestaurantId() {
+        Optional<Dish> actual = dishRepository.findByTitleAndRestaurantId(DISH1_1_TITLE, RESTAURANT1_ID);
+        DISH_MATCHER.assertMatch(dish1_1, actual.orElse(null));
     }
 }

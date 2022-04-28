@@ -28,7 +28,7 @@ public class ValidationUtil {
     public static void assureRestaurantIdConsistent(Dish dish, int restaurantId) {
         if (dish.getRestaurantId() == null) {
             dish.setRestaurantId(restaurantId);
-        } else if (dish.id() != restaurantId) {
+        } else if (dish.getRestaurantId() != restaurantId) {
             throw new IllegalRequestDataException(dish.getClass().getSimpleName() + " must has restaurantId=" + restaurantId);
         }
     }

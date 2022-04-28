@@ -13,7 +13,9 @@ public class DishTestData {
     public static final int DISH1_3_ID = 1;
     public static final int DISH1_4_ID = 4;
 
-    public static final Dish dish1_1 = new Dish(DISH1_1_ID, "Говядина Топ-блейд с трюфельным пюре", 590, RESTAURANT1_ID);
+    public static final String DISH1_1_TITLE = "Говядина Топ-блейд с трюфельным пюре";
+
+    public static final Dish dish1_1 = new Dish(DISH1_1_ID, DISH1_1_TITLE, 590, RESTAURANT1_ID);
     public static final Dish dish1_2 = new Dish(DISH1_2_ID, "Паста орзо с шеей бычка", 490, RESTAURANT1_ID);
     public static final Dish dish1_3 = new Dish(DISH1_3_ID, "Тартар из говядины с хумусом и пармезаном", 490, RESTAURANT1_ID);
     public static final Dish dish1_4 = new Dish(DISH1_4_ID, "Чернослив с соленой карамелью и орехом пекан", 390, RESTAURANT1_ID);
