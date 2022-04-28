@@ -30,6 +30,8 @@ import static org.springframework.boot.web.error.ErrorAttributeOptions.Include.M
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public static final String EXCEPTION_DUPLICATE_EMAIL = "User with this email already exists";
     public static final String EXCEPTION_DUPLICATE_TITLE = "Dish with same title already exist in this restaurant";
+    public static final String EXCEPTION_DUPLICATE_NAME = "Restaurant with same name already exist";
+    public static final String EXCEPTION_ENTITY_NOT_EXIST = "Entity for update not exist";
 
     private final ErrorAttributes errorAttributes;
 

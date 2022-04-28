@@ -38,6 +38,7 @@ public class AdminDishController extends AbstractDishController {
     }
 
     @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Valid @RequestBody Dish dish, @PathVariable int id, @PathVariable int restaurantId) {
         log.info("AdminDishController#update(dish:{}, id:{}, restaurantId:{})", dish, id, restaurantId);
         ValidationUtil.assureIdConsistent(dish, id);

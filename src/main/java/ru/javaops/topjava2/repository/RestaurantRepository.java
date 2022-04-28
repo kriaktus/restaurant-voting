@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.javaops.topjava2.model.Restaurant;
 
 import java.util.List;
+import java.util.Optional;
 
 @Transactional(readOnly = true)
 public interface RestaurantRepository extends BaseRepository<Restaurant> {
@@ -17,4 +18,6 @@ public interface RestaurantRepository extends BaseRepository<Restaurant> {
 
     @Query("SELECT r FROM Restaurant r ORDER BY r.name")
     List<Restaurant> getAll();
+
+    Optional<Restaurant> getRestaurantByName(String name);
 }
