@@ -21,6 +21,7 @@ import static ru.javaops.topjava2.test_data.RestaurantTestData.RESTAURANT2_ID;
 import static ru.javaops.topjava2.test_data.UserTestData.*;
 
 public class AdminDishControllerTest extends AbstractControllerTest {
+
     public static final String REST_URL = "/api/admin/restaurants/{restaurantId}/dishes";
     @Autowired
     private DishRepository dishRepository;
@@ -65,7 +66,8 @@ public class AdminDishControllerTest extends AbstractControllerTest {
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL, RESTAURANT1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(getNewDish())))
-                .andDo(MockMvcResultHandlers.print());
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isCreated());
         Dish actual = DISH_MATCHER.readFromJson(action);
         int newId = actual.id();
         expected.setId(newId);
@@ -82,7 +84,8 @@ public class AdminDishControllerTest extends AbstractControllerTest {
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL, RESTAURANT1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
-                .andDo(MockMvcResultHandlers.print());
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isCreated());
         Dish actual = DISH_MATCHER.readFromJson(action);
         int newId = actual.id();
         expected.setId(newId);
@@ -121,7 +124,7 @@ public class AdminDishControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(getUpdatedDish())))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
         DISH_MATCHER.assertMatch(dishRepository.get(expected.id(), RESTAURANT1_ID), expected);
     }
 
@@ -135,7 +138,7 @@ public class AdminDishControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
         DISH_MATCHER.assertMatch(dishRepository.get(expected.id(), RESTAURANT1_ID), expected);
     }
 

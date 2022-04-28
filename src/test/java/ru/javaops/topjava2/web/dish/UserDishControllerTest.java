@@ -35,4 +35,11 @@ public class UserDishControllerTest extends AbstractControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
+
+    @Test
+    void getAllByRestaurantUnAuth() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL, RESTAURANT1_ID))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
 }
