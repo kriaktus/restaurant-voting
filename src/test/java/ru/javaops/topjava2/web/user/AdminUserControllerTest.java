@@ -132,7 +132,7 @@ class AdminUserControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(USER_MATCHER.contentJson(admin, user, user2));
+                .andExpect(USER_MATCHER.contentJson(admin, user, user2, user3));
     }
 
     @Test
