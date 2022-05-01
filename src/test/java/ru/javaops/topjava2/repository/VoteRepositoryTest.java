@@ -52,6 +52,6 @@ public class VoteRepositoryTest extends AbstractRepositoryTest {
     @Test
     void getAllByDate() {
         List<Vote> actual = voteRepository.getAllByDate(LocalDate.now());
-        VOTE_MATCHER_EXCLUDE_RESTAURANT_DISHES.assertMatch(actual, List.of(userTodayVote, adminTodayVote));
+        VOTE_MATCHER_EXCLUDE_RESTAURANT_DISHES.assertMatch(actual, List.of(userTodayVote, adminTodayVote, user2TodayVote));
     }
 }

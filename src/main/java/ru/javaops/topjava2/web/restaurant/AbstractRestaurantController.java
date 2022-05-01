@@ -12,7 +12,7 @@ public abstract class AbstractRestaurantController {
     private UniqueRestaurantToValidator restaurantToValidator;
 
     @InitBinder
-    private void initBinder(WebDataBinder webDataBinder) {
+    protected void initBinder(WebDataBinder webDataBinder) {
         webDataBinder.addValidators(restaurantToValidator);
     }
 }

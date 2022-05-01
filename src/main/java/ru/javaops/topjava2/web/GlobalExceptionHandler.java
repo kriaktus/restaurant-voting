@@ -19,6 +19,9 @@ import ru.javaops.topjava2.error.AppException;
 import ru.javaops.topjava2.util.validation.ValidationUtil;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -28,6 +31,8 @@ import static org.springframework.boot.web.error.ErrorAttributeOptions.Include.M
 @AllArgsConstructor
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     public static final String EXCEPTION_DUPLICATE_EMAIL = "User with this email already exists";
     public static final String EXCEPTION_DUPLICATE_TITLE = "Dish with same title already exist in this restaurant";
     public static final String EXCEPTION_DUPLICATE_NAME = "Restaurant with same name already exist";
@@ -79,6 +84,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @SuppressWarnings("unchecked")
     private <T> ResponseEntity<T> createResponseEntity(Map<String, Object> body, HttpStatus status) {
+        body.put("timestamp", ((Date) body.get("timestamp")).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(DATE_TIME_FORMATTER));
         body.put("status", status.value());
         body.put("error", status.getReasonPhrase());
         return (ResponseEntity<T>) ResponseEntity.status(status).body(body);

@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @ToString(callSuper = true)
 public class Vote extends BaseEntity {
 
