@@ -6,17 +6,18 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javaops.topjava2.model.Restaurant;
 import ru.javaops.topjava2.to.RestaurantTo;
-import ru.javaops.topjava2.util.validation.ValidationUtil;
 
 import javax.validation.Valid;
 import java.net.URI;
 
-import static ru.javaops.topjava2.util.RestaurantUtils.toRestaurant;
-import static ru.javaops.topjava2.util.RestaurantUtils.updateRestaurantFields;
+import static ru.javaops.topjava2.util.RestaurantUtil.*;
+import static ru.javaops.topjava2.util.validation.ValidationUtil.checkNew;
+import static ru.javaops.topjava2.util.validation.ValidationUtil.checkNotFoundWithId;
 
 @RestController
 @RequestMapping(value = AdminRestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -27,29 +28,29 @@ public class AdminRestaurantController extends AbstractRestaurantController {
     static final String REST_URL = "/api/admin/restaurants";
 
     @GetMapping("/{id}")
-    public ResponseEntity<Restaurant> get(@PathVariable int id) {
+    public RestaurantTo get(@PathVariable int id) {
         log.info("AdminRestaurantController#get(id:{})", id);
-        Restaurant restaurant = restaurantRepository.get(id);
-        return restaurant == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(restaurant);
+        return toRestaurantTo(checkNotFoundWithId(restaurantRepository.findById(id), id));
     }
 
     @PostMapping
     @CacheEvict(allEntries = true)
-    public ResponseEntity<Restaurant> create(@Valid @RequestBody RestaurantTo restaurantTo) {
+    public ResponseEntity<RestaurantTo> createWithLocation(@Valid @RequestBody RestaurantTo restaurantTo) {
         log.info("AdminRestaurantController#create(restaurantTo:{})", restaurantTo);
-        ValidationUtil.checkNew(restaurantTo);
+        checkNew(restaurantTo);
         Restaurant created = restaurantRepository.save(toRestaurant(restaurantTo));
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}").build(created.id());
-        return ResponseEntity.created(uriOfNewResource).body(created);
+        return ResponseEntity.created(uriOfNewResource).body(toRestaurantTo(created));
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @CacheEvict(allEntries = true)
+    @Transactional
     public void update(@Valid @RequestBody RestaurantTo restaurantTo, @PathVariable int id) {
         log.info("AdminRestaurantController#update(restaurantTo:{}, id:{})", restaurantTo, id);
-        restaurantRepository.save(updateRestaurantFields(restaurantRepository.get(id), restaurantTo));
+        restaurantRepository.save(updateRestaurantFields(checkNotFoundWithId(restaurantRepository.findById(id), id), restaurantTo));
     }
 
     @DeleteMapping("/{id}")
@@ -57,6 +58,6 @@ public class AdminRestaurantController extends AbstractRestaurantController {
     @CacheEvict(allEntries = true)
     public void delete(@PathVariable int id) {
         log.info("AdminRestaurantController#delete(id:{})", id);
-        ValidationUtil.checkModification(restaurantRepository.delete(id), id);
+        restaurantRepository.deleteExisted(id);
     }
 }

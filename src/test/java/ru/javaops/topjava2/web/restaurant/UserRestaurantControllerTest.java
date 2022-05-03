@@ -10,6 +10,7 @@ import ru.javaops.topjava2.web.AbstractControllerTest;
 
 import static ru.javaops.topjava2.test_data.RestaurantTestData.*;
 import static ru.javaops.topjava2.test_data.UserTestData.USER_MAIL;
+import static ru.javaops.topjava2.util.RestaurantUtil.toRestaurantTo;
 
 public class UserRestaurantControllerTest extends AbstractControllerTest {
 
@@ -22,7 +23,7 @@ public class UserRestaurantControllerTest extends AbstractControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_MATCHER_EXCLUDE_DISHES.contentJson(restaurant3, restaurant1, restaurant2, restaurant4));
+                .andExpect(RESTAURANT_TO_MATCHER.contentJson(toRestaurantTo(restaurant3, restaurant1, restaurant2, restaurant4)));
     }
 
     @Test

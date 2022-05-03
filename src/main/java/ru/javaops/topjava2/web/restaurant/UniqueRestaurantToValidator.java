@@ -4,6 +4,7 @@ package ru.javaops.topjava2.web.restaurant;
 import lombok.AllArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import ru.javaops.topjava2.repository.RestaurantRepository;
@@ -25,6 +26,7 @@ public class UniqueRestaurantToValidator implements Validator {
     }
 
     @Override
+    @Transactional
     public void validate(@NonNull Object target, @NonNull Errors errors) {
         RestaurantTo restaurantTo = (RestaurantTo) target;
         String requestURI = request.getRequestURI();
@@ -32,7 +34,7 @@ public class UniqueRestaurantToValidator implements Validator {
             try {
                 int pathId = Integer.parseInt(requestURI.split("/")[4]);
                 ValidationUtil.assureIdConsistent(restaurantTo, pathId);
-                if (restaurantRepository.get(pathId) == null) {
+                if (!restaurantRepository.existsById(pathId)) {
                     errors.rejectValue("id", "", GlobalExceptionHandler.EXCEPTION_ENTITY_NOT_EXIST);
                 }
             } catch (NumberFormatException nfe) {

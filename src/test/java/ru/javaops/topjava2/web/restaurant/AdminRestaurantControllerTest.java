@@ -11,11 +11,14 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.javaops.topjava2.model.Restaurant;
 import ru.javaops.topjava2.repository.RestaurantRepository;
+import ru.javaops.topjava2.to.RestaurantTo;
 import ru.javaops.topjava2.util.JsonUtil;
 import ru.javaops.topjava2.web.AbstractControllerTest;
 
 import static ru.javaops.topjava2.test_data.RestaurantTestData.*;
 import static ru.javaops.topjava2.test_data.UserTestData.*;
+import static ru.javaops.topjava2.util.RestaurantUtil.toRestaurantTo;
+import static ru.javaops.topjava2.util.validation.ValidationUtil.checkNotFoundWithId;
 
 public class AdminRestaurantControllerTest extends AbstractControllerTest {
 
@@ -38,7 +41,7 @@ public class AdminRestaurantControllerTest extends AbstractControllerTest {
     void getNotFound() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "/{id}", NOT_FOUND))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
 
     @Test
@@ -59,17 +62,17 @@ public class AdminRestaurantControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void create() throws Exception {
-        Restaurant expected = getNewRestaurant();
+        RestaurantTo expected = toRestaurantTo(getNewRestaurant());
         ResultActions resultActions = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(getNewRestaurant())))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isCreated());
-        Restaurant actual = RESTAURANT_MATCHER.readFromJson(resultActions);
+        RestaurantTo actual = RESTAURANT_TO_MATCHER.readFromJson(resultActions);
         int newId = actual.id();
         expected.setId(newId);
-        RESTAURANT_MATCHER_EXCLUDE_DISHES.assertMatch(expected, actual);
-        RESTAURANT_MATCHER_EXCLUDE_DISHES.assertMatch(restaurantRepository.get(newId), expected);
+        RESTAURANT_TO_MATCHER.assertMatch(expected, actual);
+        RESTAURANT_TO_MATCHER.assertMatch(toRestaurantTo(checkNotFoundWithId(restaurantRepository.findById(newId), newId)), expected);
     }
 
     @Test
@@ -93,7 +96,7 @@ public class AdminRestaurantControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(getUpdatedRestaurant())))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
-        RESTAURANT_MATCHER.assertMatch(restaurantRepository.get(RESTAURANT1_ID), expected);
+        RESTAURANT_MATCHER.assertMatch(restaurantRepository.findById(RESTAURANT1_ID).orElse(null), expected);
     }
 
     @Test
@@ -121,11 +124,11 @@ public class AdminRestaurantControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void delete() throws Exception {
-        Assertions.assertNotNull(restaurantRepository.get(RESTAURANT1_ID));
+        Assertions.assertTrue(restaurantRepository.existsById(RESTAURANT1_ID));
         perform(MockMvcRequestBuilders.delete(REST_URL + "/{id}", RESTAURANT1_ID))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
-        Assertions.assertNull(restaurantRepository.get(RESTAURANT1_ID));
+        Assertions.assertFalse(restaurantRepository.existsById(RESTAURANT1_ID));
     }
 
     @Test
