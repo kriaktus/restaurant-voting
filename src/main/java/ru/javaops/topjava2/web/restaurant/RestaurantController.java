@@ -15,10 +15,10 @@ import java.util.List;
 import static ru.javaops.topjava2.util.RestaurantUtil.toRestaurantTo;
 
 @RestController
-@RequestMapping(value = UserRestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = RestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @CacheConfig(cacheNames = "restaurants")
-public class UserRestaurantController extends AbstractRestaurantController {
+public class RestaurantController extends AbstractRestaurantController {
 
     static final String REST_URL = "/api/restaurants";
 

@@ -12,7 +12,7 @@ import static ru.javaops.topjava2.test_data.RestaurantTestData.*;
 import static ru.javaops.topjava2.test_data.UserTestData.USER_MAIL;
 import static ru.javaops.topjava2.util.RestaurantUtil.toRestaurantTo;
 
-public class UserRestaurantControllerTest extends AbstractControllerTest {
+public class RestaurantControllerTest extends AbstractControllerTest {
 
     public static final String REST_URL = "/api/restaurants";
 

@@ -14,7 +14,7 @@ import static ru.javaops.topjava2.test_data.UserTestData.NOT_FOUND;
 import static ru.javaops.topjava2.test_data.UserTestData.USER_MAIL;
 import static ru.javaops.topjava2.util.DishUtil.toDishTo;
 
-public class UserDishControllerTest extends AbstractControllerTest {
+public class DishControllerTest extends AbstractControllerTest {
     public static final String REST_URL = "/api/restaurants/{restaurantId}/dishes";
 
     @Test

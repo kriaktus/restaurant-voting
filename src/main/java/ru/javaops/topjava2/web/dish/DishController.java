@@ -16,10 +16,10 @@ import static ru.javaops.topjava2.util.DishUtil.toDishTo;
 import static ru.javaops.topjava2.util.validation.ValidationUtil.checkNotFoundWithId;
 
 @RestController
-@RequestMapping(value = UserDishController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = DishController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @CacheConfig(cacheNames = "dishes")
-public class UserDishController extends AbstractDishController {
+public class DishController extends AbstractDishController {
 
     public static final String REST_URL = "/api/restaurants/{restaurantId}/dishes";
 

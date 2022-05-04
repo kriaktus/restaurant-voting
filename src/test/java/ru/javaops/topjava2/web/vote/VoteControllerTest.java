@@ -25,12 +25,12 @@ import static ru.javaops.topjava2.test_data.UserTestData.*;
 import static ru.javaops.topjava2.test_data.VoteTestData.*;
 import static ru.javaops.topjava2.util.VoteUtil.toVoteTo;
 
-public class UserVoteControllerTest extends AbstractControllerTest {
+public class VoteControllerTest extends AbstractControllerTest {
 
     public static final String REST_URL = "/api/votes";
     @InjectMocks
     @Autowired
-    private UserVoteController userVoteController;
+    private VoteController voteController;
     @Mock
     private Clock clock;
     @Autowired

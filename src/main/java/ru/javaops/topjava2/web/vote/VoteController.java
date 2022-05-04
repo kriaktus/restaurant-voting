@@ -21,10 +21,10 @@ import java.util.Map;
 import static ru.javaops.topjava2.util.VoteUtil.toVoteTo;
 
 @RestController
-@RequestMapping(value = UserVoteController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = VoteController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @CacheConfig(cacheNames = "votes")
-public class UserVoteController {
+public class VoteController {
 
     static final String REST_URL = "/api/votes";
     @Autowired

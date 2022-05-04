@@ -19,12 +19,12 @@ import static ru.javaops.topjava2.test_data.RestaurantTestData.RESTAURANT2_ID;
 import static ru.javaops.topjava2.test_data.UserTestData.USER3_MAIL;
 import static ru.javaops.topjava2.test_data.UserTestData.USER_MAIL;
 
-public class UserVoteControllerAfter11Test extends AbstractControllerTest {
+public class VoteControllerAfter11Test extends AbstractControllerTest {
 
     public static final String REST_URL = "/api/votes";
     @InjectMocks
     @Autowired
-    private UserVoteController userVoteController;
+    private VoteController voteController;
     @Mock
     private Clock clock;
 
