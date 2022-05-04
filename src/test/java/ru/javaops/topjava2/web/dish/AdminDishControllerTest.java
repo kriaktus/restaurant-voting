@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.javaops.topjava2.model.Dish;
 import ru.javaops.topjava2.repository.DishRepository;
+import ru.javaops.topjava2.to.DishTo;
 import ru.javaops.topjava2.util.JsonUtil;
 import ru.javaops.topjava2.web.AbstractControllerTest;
 
@@ -17,8 +18,9 @@ import java.util.List;
 
 import static ru.javaops.topjava2.test_data.DishTestData.*;
 import static ru.javaops.topjava2.test_data.RestaurantTestData.RESTAURANT1_ID;
-import static ru.javaops.topjava2.test_data.RestaurantTestData.RESTAURANT2_ID;
 import static ru.javaops.topjava2.test_data.UserTestData.*;
+import static ru.javaops.topjava2.util.DishUtil.toDishTo;
+import static ru.javaops.topjava2.util.validation.ValidationUtil.checkNotFoundWithId;
 
 public class AdminDishControllerTest extends AbstractControllerTest {
 
@@ -33,7 +35,7 @@ public class AdminDishControllerTest extends AbstractControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(DISH_MATCHER.contentJson(dish1_1));
+                .andExpect(DISH_TO_MATCHER.contentJson(toDishTo(dish1_1)));
     }
 
     @Test
@@ -41,7 +43,7 @@ public class AdminDishControllerTest extends AbstractControllerTest {
     void getNotFound() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "/{id}", RESTAURANT1_ID, NOT_FOUND))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
 
     @Test
@@ -62,41 +64,25 @@ public class AdminDishControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void create() throws Exception {
-        Dish expected = getNewDish();
+        DishTo expected = toDishTo(getNewDish());
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL, RESTAURANT1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(getNewDish())))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isCreated());
-        Dish actual = DISH_MATCHER.readFromJson(action);
+        DishTo actual = DISH_TO_MATCHER.readFromJson(action);
         int newId = actual.id();
         expected.setId(newId);
-        DISH_MATCHER.assertMatch(expected, actual);
-        DISH_MATCHER.assertMatch(dishRepository.get(newId, RESTAURANT1_ID), expected);
-    }
-
-    @Test
-    @WithUserDetails(value = ADMIN_MAIL)
-    void createWithoutRestaurantId() throws Exception {
-        Dish expected = getNewDish();
-        Dish updated = getNewDish();
-        updated.setRestaurantId(null);
-        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL, RESTAURANT1_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(updated)))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isCreated());
-        Dish actual = DISH_MATCHER.readFromJson(action);
-        int newId = actual.id();
-        expected.setId(newId);
-        DISH_MATCHER.assertMatch(expected, actual);
-        DISH_MATCHER.assertMatch(dishRepository.get(newId, RESTAURANT1_ID), expected);
+        DISH_TO_MATCHER.assertMatch(expected, actual);
+        DISH_TO_MATCHER.assertMatch(
+                toDishTo(checkNotFoundWithId(dishRepository.findByIdAndRestaurantId(newId, RESTAURANT1_ID), newId)),
+                expected);
     }
 
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void createDuplicate() throws Exception {
-        Dish duplicate = new Dish(dish1_1);
+        DishTo duplicate = toDishTo(new Dish(dish1_1));
         duplicate.setId(null);
         perform(MockMvcRequestBuilders.post(REST_URL, RESTAURANT1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -107,59 +93,26 @@ public class AdminDishControllerTest extends AbstractControllerTest {
 
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
-    void createWithVariousRestaurantId() throws Exception {
-        Dish dishForRestaurant1 = getNewDish();
-        perform(MockMvcRequestBuilders.post(REST_URL, RESTAURANT2_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(dishForRestaurant1)))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
-    }
-
-    @Test
-    @WithUserDetails(value = ADMIN_MAIL)
     void update() throws Exception {
         Dish expected = getUpdatedDish();
+        int id = expected.id();
         perform(MockMvcRequestBuilders.put(REST_URL + "/{id}", RESTAURANT1_ID, DISH1_3_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(getUpdatedDish())))
+                .content(JsonUtil.writeValue(toDishTo(getUpdatedDish()))))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
-        DISH_MATCHER.assertMatch(dishRepository.get(expected.id(), RESTAURANT1_ID), expected);
-    }
-
-    @Test
-    @WithUserDetails(value = ADMIN_MAIL)
-    void updateWithoutRestaurantId() throws Exception {
-        Dish expected = getUpdatedDish();
-        Dish updated = getUpdatedDish();
-        updated.setRestaurantId(null);
-        perform(MockMvcRequestBuilders.put(REST_URL + "/{id}", RESTAURANT1_ID, DISH1_3_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(updated)))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isNoContent());
-        DISH_MATCHER.assertMatch(dishRepository.get(expected.id(), RESTAURANT1_ID), expected);
+        DISH_MATCHER.assertMatch(
+                checkNotFoundWithId(dishRepository.findByIdAndRestaurantId(id, RESTAURANT1_ID), id),
+                getUpdatedDish());
     }
 
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void updateDuplicateTitle() throws Exception {
-        Dish duplicateTitleDish = getUpdatedDish();
-        duplicateTitleDish.setTitle(dish1_1.getTitle());
+        DishTo duplicateTitleDishTo = new DishTo(null, DISH1_1_TITLE, 590);
         perform(MockMvcRequestBuilders.put(REST_URL + "/{id}", RESTAURANT1_ID, DISH1_3_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(duplicateTitleDish)))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
-    }
-
-    @Test
-    @WithUserDetails(value = ADMIN_MAIL)
-    void updateWithVariousRestaurantId() throws Exception {
-        perform(MockMvcRequestBuilders.put(REST_URL + "/{id}", RESTAURANT2_ID, DISH1_3_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(getUpdatedDish())))
+                .content(JsonUtil.writeValue(duplicateTitleDishTo)))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
@@ -170,7 +123,9 @@ public class AdminDishControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.delete(REST_URL + "/{id}", RESTAURANT1_ID, DISH1_3_ID))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
-        DISH_MATCHER.assertMatch(dishRepository.getAllByRestaurantId(RESTAURANT1_ID), dish1_1, dish1_2, dish1_4);
+        DISH_MATCHER.assertMatch(
+                dishRepository.findAllByRestaurantIdOrderByTitle(RESTAURANT1_ID),
+                dish1_1, dish1_2, dish1_4);
     }
 
     @Test
@@ -187,7 +142,7 @@ public class AdminDishControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.delete(REST_URL, RESTAURANT1_ID))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
-        DISH_MATCHER.assertMatch(dishRepository.getAllByRestaurantId(RESTAURANT1_ID), List.of());
+        DISH_MATCHER.assertMatch(dishRepository.findAllByRestaurantIdOrderByTitle(RESTAURANT1_ID), List.of());
     }
 
     @Test

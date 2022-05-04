@@ -1,12 +1,14 @@
 package ru.javaops.topjava2.test_data;
 
 import ru.javaops.topjava2.model.Dish;
+import ru.javaops.topjava2.to.DishTo;
 import ru.javaops.topjava2.web.MatcherFactory;
 
 import static ru.javaops.topjava2.test_data.RestaurantTestData.RESTAURANT1_ID;
 
 public class DishTestData {
     public static final MatcherFactory.Matcher<Dish> DISH_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(Dish.class);
+    public static final MatcherFactory.Matcher<DishTo> DISH_TO_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(DishTo.class);
 
     public static final int DISH1_1_ID = 3;
     public static final int DISH1_2_ID = 2;

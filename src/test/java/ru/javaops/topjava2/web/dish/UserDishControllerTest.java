@@ -12,6 +12,7 @@ import static ru.javaops.topjava2.test_data.DishTestData.*;
 import static ru.javaops.topjava2.test_data.RestaurantTestData.RESTAURANT1_ID;
 import static ru.javaops.topjava2.test_data.UserTestData.NOT_FOUND;
 import static ru.javaops.topjava2.test_data.UserTestData.USER_MAIL;
+import static ru.javaops.topjava2.util.DishUtil.toDishTo;
 
 public class UserDishControllerTest extends AbstractControllerTest {
     public static final String REST_URL = "/api/restaurants/{restaurantId}/dishes";
@@ -24,7 +25,7 @@ public class UserDishControllerTest extends AbstractControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(DISH_MATCHER.contentJson(dish1_1, dish1_2, dish1_3, dish1_4));
+                .andExpect(DISH_TO_MATCHER.contentJson(toDishTo(dish1_1, dish1_2, dish1_3, dish1_4)));
     }
 
     @Test
@@ -33,7 +34,7 @@ public class UserDishControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders
                 .get(REST_URL, NOT_FOUND))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
 
     @Test

@@ -1,61 +1,76 @@
 package ru.javaops.topjava2.web.dish;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javaops.topjava2.model.Dish;
-import ru.javaops.topjava2.util.validation.ValidationUtil;
+import ru.javaops.topjava2.to.DishTo;
 
 import javax.validation.Valid;
 import java.net.URI;
 
+import static ru.javaops.topjava2.util.DishUtil.fromDishToAndRestaurant;
+import static ru.javaops.topjava2.util.DishUtil.toDishTo;
+import static ru.javaops.topjava2.util.validation.ValidationUtil.*;
+
 @RestController
 @RequestMapping(value = AdminDishController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
+@CacheConfig(cacheNames = "dishes")
 public class AdminDishController extends AbstractDishController {
     public static final String REST_URL = "/api/admin/restaurants/{restaurantId}/dishes";
 
     @GetMapping("/{id}")
-    public ResponseEntity<Dish> get(@PathVariable int id, @PathVariable int restaurantId) {
+    public DishTo get(@PathVariable int id, @PathVariable int restaurantId) {
         log.info("AdminDishController#get(id:{}, restaurantId:{})", id, restaurantId);
-        Dish dish = dishRepository.get(id, restaurantId);
-        return dish == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(dish);
+        return toDishTo(checkNotFoundWithMessage(
+                dishRepository.findByIdAndRestaurantId(id, restaurantId),
+                String.format("Dish with id=%d and restaurantId=%d not found", id, restaurantId)));
     }
 
     @PostMapping
-    public ResponseEntity<Dish> create(@Valid @RequestBody Dish dish, @PathVariable int restaurantId) {
-        log.info("AdminDishController#create(dish:{}, restaurantId:{})", dish, restaurantId);
-        ValidationUtil.checkNew(dish);
-        Dish created = dishRepository.save(dish);
+    @Transactional
+    @CacheEvict(allEntries = true)
+    public ResponseEntity<DishTo> create(@Valid @RequestBody DishTo dishTo, @PathVariable int restaurantId) {
+        log.info("AdminDishController#create(dishTo:{}, restaurantId:{})", dishTo, restaurantId);
+        checkNew(dishTo);
+        Dish created = dishRepository.save(fromDishToAndRestaurant(dishTo, checkNotFoundWithId(restaurantRepository.findById(restaurantId), restaurantId)));
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(restaurantId, created.getId())
                 .toUri();
-        return ResponseEntity.created(uriOfNewResource).body(created);
+        return ResponseEntity.created(uriOfNewResource).body(toDishTo(created));
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody Dish dish, @PathVariable int id, @PathVariable int restaurantId) {
-        log.info("AdminDishController#update(dish:{}, id:{}, restaurantId:{})", dish, id, restaurantId);
-        ValidationUtil.assureIdConsistent(dish, id);
-        dishRepository.save(dish);
+    @Transactional
+    @CacheEvict(allEntries = true)
+    public void update(@Valid @RequestBody DishTo dishTo, @PathVariable int id, @PathVariable int restaurantId) {
+        log.info("AdminDishController#update(dishTo:{}, id:{}, restaurantId:{})", dishTo, id, restaurantId);
+        assureIdConsistent(dishTo, id);
+        dishRepository.save(fromDishToAndRestaurant(dishTo, checkNotFoundWithId(restaurantRepository.findById(restaurantId), restaurantId)));
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CacheEvict(allEntries = true)
     public void delete(@PathVariable int id, @PathVariable int restaurantId) {
         log.info("AdminDishController#delete(id:{}, restaurantId:{})", id, restaurantId);
-        ValidationUtil.checkModification(dishRepository.delete(id, restaurantId), id);
+        checkModification(dishRepository.delete(id, restaurantId), id);
     }
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CacheEvict(allEntries = true)
     public void deleteAllByRestaurantId(@PathVariable int restaurantId) {
         log.info("AdminDishController#deleteAllByRestaurantId(restaurantId:{})", restaurantId);
-        ValidationUtil.checkModification(dishRepository.deleteAllByRestaurantId(restaurantId));
+        checkModification(dishRepository.deleteAllByRestaurantId(restaurantId));
     }
 }

@@ -60,6 +60,12 @@ public class ValidationUtil {
         });
     }
 
+    public static <T> T checkNotFoundWithMessage(Optional<T> optional, String message) {
+        return optional.orElseThrow(() -> {
+            throw new IllegalRequestDataException(message);
+        });
+    }
+
     public static void compareCurrentTimeWith(LocalTime localTime, boolean isAfter, String message, Clock clock) {
         if (LocalTime.now(clock).isAfter(localTime) ^ !isAfter)
             throw new AppException(HttpStatus.NOT_ACCEPTABLE, message, ErrorAttributeOptions.of(MESSAGE));
