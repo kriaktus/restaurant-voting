@@ -45,7 +45,9 @@ public class VoteService {
         return voteRepository.getAllByDate(LocalDate.now(clock))
                 .stream()
                 .collect(Collectors.collectingAndThen(
-                        Collectors.toMap(vote -> vote.getRestaurant().getName(), vote -> 1, Integer::sum),
+                        Collectors.toMap(
+                                vote -> String.format("(id:%s) %s", vote.getRestaurant().getId(),vote.getRestaurant().getName()),
+                                vote -> 1, Integer::sum),
                         map -> map.entrySet().stream()
                                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new)))

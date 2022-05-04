@@ -13,8 +13,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import ru.javaops.topjava2.model.Vote;
 import ru.javaops.topjava2.repository.VoteRepository;
+import ru.javaops.topjava2.to.VoteTo;
 import ru.javaops.topjava2.web.AbstractControllerTest;
 
 import java.time.*;
@@ -23,6 +23,7 @@ import static org.mockito.Mockito.doReturn;
 import static ru.javaops.topjava2.test_data.RestaurantTestData.RESTAURANT2_ID;
 import static ru.javaops.topjava2.test_data.UserTestData.*;
 import static ru.javaops.topjava2.test_data.VoteTestData.*;
+import static ru.javaops.topjava2.util.VoteUtil.toVoteTo;
 
 public class UserVoteControllerTest extends AbstractControllerTest {
 
@@ -50,7 +51,7 @@ public class UserVoteControllerTest extends AbstractControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(VOTE_MATCHER_EXCLUDE_RESTAURANT_DISHES.contentJson(userTodayVote));
+                .andExpect(VOTE_TO_MATCHER.contentJson(toVoteTo(userTodayVote)));
     }
 
     @Test
@@ -58,20 +59,20 @@ public class UserVoteControllerTest extends AbstractControllerTest {
     void getNotFound() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
 
     @Test
     @WithUserDetails(value = USER3_MAIL)
     void createOrUpdate() throws Exception {
-        Vote expect = getNewVote();
-        ResultActions actions = perform(MockMvcRequestBuilders.post(REST_URL).queryParam("restaurantId", Integer.toString(RESTAURANT2_ID)))
+        VoteTo expect = toVoteTo(getNewVote());
+        ResultActions resultActions = perform(MockMvcRequestBuilders.post(REST_URL).queryParam("restaurantId", Integer.toString(RESTAURANT2_ID)))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
-        Vote actual = VOTE_MATCHER.readFromJson(actions);
+        VoteTo actual = VOTE_TO_MATCHER.readFromJson(resultActions);
         expect.setId(actual.id());
-        VOTE_MATCHER_EXCLUDE_RESTAURANT_DISHES.assertMatch(expect, actual);
+        VOTE_TO_MATCHER.assertMatch(expect, actual);
     }
 
     @Test

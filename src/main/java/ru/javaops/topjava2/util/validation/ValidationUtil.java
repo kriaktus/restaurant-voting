@@ -34,14 +34,6 @@ public class ValidationUtil {
         }
     }
 
-    public static void assureRestaurantIdConsistent(Dish dish, int restaurantId) {
-        if (dish.getRestaurantId() == null) {
-            dish.setRestaurantId(restaurantId);
-        } else if (dish.getRestaurantId() != restaurantId) {
-            throw new IllegalRequestDataException(dish.getClass().getSimpleName() + " must has restaurantId=" + restaurantId);
-        }
-    }
-
     public static void checkModification(int count) {
         if (count == 0) {
             throw new IllegalRequestDataException("Not found entity for modify");
@@ -54,10 +46,22 @@ public class ValidationUtil {
         }
     }
 
+    public static <T> T checkNotFoundWithId(T object, int id) {
+        checkNotFoundWithMessage(object != null, "Not found entity with id=" + id);
+        return object;
+    }
+
+    public static <T> T checkNotFoundWithMessage(T object, String message) {
+        checkNotFoundWithMessage(object != null, message);
+        return object;
+    }
+
+    public static <T> void checkNotFoundWithMessage(boolean found, String message) {
+        if (!found) throw new IllegalRequestDataException(message);
+    }
+
     public static <T> T checkNotFoundWithId(Optional<T> optional, int id) {
-        return optional.orElseThrow(() -> {
-            throw new IllegalRequestDataException("Entity with id=" + id + " not found");
-        });
+        return checkNotFoundWithMessage(optional, "Not found entity with id=" + id);
     }
 
     public static <T> T checkNotFoundWithMessage(Optional<T> optional, String message) {
