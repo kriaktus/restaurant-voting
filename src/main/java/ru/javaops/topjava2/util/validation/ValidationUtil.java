@@ -8,7 +8,6 @@ import org.springframework.lang.NonNull;
 import ru.javaops.topjava2.HasId;
 import ru.javaops.topjava2.error.AppException;
 import ru.javaops.topjava2.error.IllegalRequestDataException;
-import ru.javaops.topjava2.model.Dish;
 
 import java.time.Clock;
 import java.time.LocalTime;
