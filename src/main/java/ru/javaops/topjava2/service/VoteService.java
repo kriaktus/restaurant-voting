@@ -1,6 +1,9 @@
 package ru.javaops.topjava2.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javaops.topjava2.model.Vote;
@@ -18,6 +21,7 @@ import java.util.stream.Collectors;
 import static ru.javaops.topjava2.util.validation.ValidationUtil.*;
 
 @Service
+@CacheConfig(cacheNames = "votes")
 public class VoteService {
     @Autowired
     private VoteRepository voteRepository;
@@ -29,6 +33,7 @@ public class VoteService {
     }
 
     @Transactional
+    @CacheEvict(allEntries = true)
     public Vote createOrUpdate(int userId, Clock clock, int restaurantId) {
         compareCurrentTimeWith(LocalTime.of(11, 0), true, "Voting ends at 11:00. You can see the results", clock);
         Vote vote = new Vote(userId, LocalDate.now(clock), checkNotFoundWithId(restaurantRepository.findById(restaurantId), restaurantId));
@@ -36,17 +41,19 @@ public class VoteService {
         return voteRepository.save(vote);
     }
 
+    @CacheEvict(allEntries = true)
     public void delete(int userId, Clock clock) {
         compareCurrentTimeWith(LocalTime.of(11, 0), true, "You can't delete you voice after voting end", clock);
         checkModification(voteRepository.deleteByUserIdAndDate(userId, LocalDate.now(clock)));
     }
 
+    @Cacheable
     public Map<String, Integer> calculateResult(Clock clock) {
         return voteRepository.getAllByDate(LocalDate.now(clock))
                 .stream()
                 .collect(Collectors.collectingAndThen(
                         Collectors.toMap(
-                                vote -> String.format("(id:%s) %s", vote.getRestaurant().getId(),vote.getRestaurant().getName()),
+                                vote -> String.format("(id:%s) %s", vote.getRestaurant().getId(), vote.getRestaurant().getName()),
                                 vote -> 1, Integer::sum),
                         map -> map.entrySet().stream()
                                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))

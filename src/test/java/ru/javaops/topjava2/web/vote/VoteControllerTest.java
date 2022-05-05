@@ -1,7 +1,6 @@
 package ru.javaops.topjava2.web.vote;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -17,6 +16,7 @@ import ru.javaops.topjava2.repository.VoteRepository;
 import ru.javaops.topjava2.to.VoteTo;
 import ru.javaops.topjava2.web.AbstractControllerTest;
 
+import javax.annotation.PostConstruct;
 import java.time.*;
 
 import static org.mockito.Mockito.doReturn;
@@ -28,6 +28,7 @@ import static ru.javaops.topjava2.util.VoteUtil.toVoteTo;
 public class VoteControllerTest extends AbstractControllerTest {
 
     public static final String REST_URL = "/api/votes";
+
     @InjectMocks
     @Autowired
     private VoteController voteController;
@@ -36,7 +37,7 @@ public class VoteControllerTest extends AbstractControllerTest {
     @Autowired
     private VoteRepository voteRepository;
 
-    @BeforeEach()
+    @PostConstruct()
     public void initMocks() {
         MockitoAnnotations.openMocks(this);
         Clock fixedClock = Clock.fixed(LocalDateTime.of(LocalDate.now(), LocalTime.of(10, 0)).toInstant(ZoneOffset.UTC), ZoneOffset.UTC);

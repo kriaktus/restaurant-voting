@@ -1,6 +1,5 @@
 package ru.javaops.topjava2.web.vote;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -12,6 +11,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.javaops.topjava2.web.AbstractControllerTest;
 
+import javax.annotation.PostConstruct;
 import java.time.*;
 
 import static org.mockito.Mockito.doReturn;
@@ -28,7 +28,7 @@ public class VoteControllerAfter11Test extends AbstractControllerTest {
     @Mock
     private Clock clock;
 
-    @BeforeEach()
+    @PostConstruct()
     public void initMocks() {
         MockitoAnnotations.openMocks(this);
         Clock fixedClock = Clock.fixed(LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 0)).toInstant(ZoneOffset.UTC), ZoneOffset.UTC);
