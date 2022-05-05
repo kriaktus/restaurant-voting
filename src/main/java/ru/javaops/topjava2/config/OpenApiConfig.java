@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springdoc.core.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,15 @@ import org.springframework.context.annotation.Configuration;
                 description = "Приложение по <a href='https://javaops.ru/view/topjava2'>курсу TopJava-2</a> (решение выпускного проекта)",
                 contact = @Contact(url = "https://javaops.ru/#contacts", name = "Grigory Kislin", email = "admin@javaops.ru")
         ),
+        tags = {
+                @Tag(name = "ProfileController", description = "default user profile api"),
+                @Tag(name = "RestaurantController", description = "default user restaurants api"),
+                @Tag(name = "DishController", description = "default user dishes api"),
+                @Tag(name = "VoteController", description = "default user votes api"),
+                @Tag(name = "AdminUserController", description = "admin users api"),
+                @Tag(name = "AdminRestaurantController", description = "admin restaurants api"),
+                @Tag(name = "AdminDishController", description = "admin dishes api")
+        },
         security = @SecurityRequirement(name = "basicAuth")
 )
 public class OpenApiConfig {

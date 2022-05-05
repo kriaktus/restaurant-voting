@@ -1,5 +1,11 @@
 package ru.javaops.topjava2.web.dish;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -22,10 +28,18 @@ import static ru.javaops.topjava2.util.validation.ValidationUtil.*;
 @RestController
 @RequestMapping(value = AdminDishController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
+@Tag(name = "AdminDishController")
+@ApiResponses({
+        @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+        @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)})
 @CacheConfig(cacheNames = "dishes")
 public class AdminDishController extends AbstractDishController {
     public static final String REST_URL = "/api/admin/restaurants/{restaurantId}/dishes";
 
+    @Operation(summary = "#get", description = "Get dish by id from the restaurant (with id={restaurantId}) menu")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DishTo.class))),
+            @ApiResponse(responseCode = "422", description = "Unprocessable Entity", content = @Content)})
     @GetMapping("/{id}")
     public DishTo get(@PathVariable int id, @PathVariable int restaurantId) {
         log.info("AdminDishController#get(id:{}, restaurantId:{})", id, restaurantId);
@@ -34,10 +48,14 @@ public class AdminDishController extends AbstractDishController {
                 String.format("Dish with id=%d and restaurantId=%d not found", id, restaurantId)));
     }
 
+    @Operation(summary = "#createWithLocation", description = "Create new dish from the restaurant (with id={restaurantId}) menu, return in header his url")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = DishTo.class))),
+            @ApiResponse(responseCode = "422", description = "Unprocessable Entity", content = @Content)})
     @PostMapping
     @Transactional
     @CacheEvict(allEntries = true)
-    public ResponseEntity<DishTo> create(@Valid @RequestBody DishTo dishTo, @PathVariable int restaurantId) {
+    public ResponseEntity<DishTo> createWithLocation(@Valid @RequestBody DishTo dishTo, @PathVariable int restaurantId) {
         log.info("AdminDishController#create(dishTo:{}, restaurantId:{})", dishTo, restaurantId);
         checkNew(dishTo);
         Dish created = dishRepository.save(fromDishToAndRestaurant(dishTo, checkNotFoundWithId(restaurantRepository.findById(restaurantId), restaurantId)));
@@ -48,6 +66,10 @@ public class AdminDishController extends AbstractDishController {
         return ResponseEntity.created(uriOfNewResource).body(toDishTo(created));
     }
 
+    @Operation(summary = "#update", description = "Update dish by id from the restaurant (with id={restaurantId}) menu")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "No Content"),
+            @ApiResponse(responseCode = "422", description = "Unprocessable Entity")})
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
@@ -58,6 +80,10 @@ public class AdminDishController extends AbstractDishController {
         dishRepository.save(fromDishToAndRestaurant(dishTo, checkNotFoundWithId(restaurantRepository.findById(restaurantId), restaurantId)));
     }
 
+    @Operation(summary = "#delete", description = "Delete dish by id from the restaurant (with id={restaurantId}) menu")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "No Content"),
+            @ApiResponse(responseCode = "422", description = "Unprocessable Entity")})
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @CacheEvict(allEntries = true)
@@ -66,6 +92,10 @@ public class AdminDishController extends AbstractDishController {
         checkModification(dishRepository.delete(id, restaurantId), id);
     }
 
+    @Operation(summary = "#deleteAllByRestaurantId", description = "Delete all dishes from the restaurant (with id={restaurantId}) menu")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "No Content"),
+            @ApiResponse(responseCode = "422", description = "Unprocessable Entity")})
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @CacheEvict(allEntries = true)

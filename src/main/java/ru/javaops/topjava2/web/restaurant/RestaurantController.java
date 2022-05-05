@@ -1,5 +1,12 @@
 package ru.javaops.topjava2.web.restaurant;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
@@ -17,11 +24,16 @@ import static ru.javaops.topjava2.util.RestaurantUtil.toRestaurantTo;
 @RestController
 @RequestMapping(value = RestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
+@Tag(name = "RestaurantController")
 @CacheConfig(cacheNames = "restaurants")
 public class RestaurantController extends AbstractRestaurantController {
 
     static final String REST_URL = "/api/restaurants";
 
+    @Operation(summary = "#getAll", description = "Get all restaurants")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = RestaurantTo.class)))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)})
     @GetMapping
     @Cacheable
     public List<RestaurantTo> getAll() {
