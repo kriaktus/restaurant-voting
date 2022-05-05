@@ -39,6 +39,7 @@ create table DISH
     foreign key (restaurant_id) references RESTAURANT (id) on delete cascade,
     constraint DISHES_UNIQUE_RESTAURANT_ID_TITLE_CONSTRAINT unique (restaurant_id, title)
 );
+create index DISH_RESTAURANT_ID_IDX on DISH (restaurant_id);
 
 create table VOTE
 (
@@ -50,4 +51,5 @@ create table VOTE
     foreign key (restaurant_id) references RESTAURANT (id) on delete cascade,
     constraint VOTES_UNIQUE_USERID_VOTING_DATE_CONSTRAINT unique (user_id, voting_date)
 );
-create index VOTES_DATE_IDX on VOTE (voting_date);
+create unique index VOTE_UNIQUE_USER_ID_VOTING_DATE_IDX on VOTE (user_id, voting_date);
+create index VOTE_VOTING_DATE_IDX on VOTE (voting_date);

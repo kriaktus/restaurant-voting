@@ -6,8 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,12 +28,12 @@ import static ru.javaops.topjava2.util.VoteUtil.toVoteTo;
 @Slf4j
 @Tag(name = "VoteController")
 @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+@AllArgsConstructor
 public class VoteController {
 
     static final String REST_URL = "/api/votes";
-    @Autowired
+
     private VoteService voteService;
-    @Autowired
     private Clock clock;
 
     @Operation(summary = "#get", description = "Get authorized user today's vote")
