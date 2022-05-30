@@ -48,8 +48,7 @@ create table VOTE
     voting_date     date        not null        default current_date,
     restaurant_id   int         not null,
     foreign key (user_id) references USERS (id) on delete cascade,
-    foreign key (restaurant_id) references RESTAURANT (id) on delete cascade,
-    constraint VOTES_UNIQUE_USERID_VOTING_DATE_CONSTRAINT unique (user_id, voting_date)
+    foreign key (restaurant_id) references RESTAURANT (id) on delete cascade
 );
 create unique index VOTE_UNIQUE_USER_ID_VOTING_DATE_IDX on VOTE (user_id, voting_date);
 create index VOTE_VOTING_DATE_IDX on VOTE (voting_date);
