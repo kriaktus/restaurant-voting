@@ -33,7 +33,7 @@ public class UniqueDishToValidator implements Validator {
             return;
         }
 
-        repository.findByTitleAndRestaurantId(dish.getTitle(), restaurantId).ifPresent(dbDish -> {
+        repository.findByNameAndRestaurantId(dish.getName(), restaurantId).ifPresent(dbDish -> {
             Integer id = dish.getId();
             if (request.getMethod().equals("PUT")) {
                 // update itself - it's ok
@@ -41,7 +41,7 @@ public class UniqueDishToValidator implements Validator {
                 // if dish from request body hasn't id, but dish id in path equals dish.id from db - it's ok
                 if (id == null && requestURI.endsWith("/" + dbDish.getId())) return;
             }
-            errors.rejectValue("title", "", GlobalExceptionHandler.EXCEPTION_DUPLICATE_TITLE);
+            errors.rejectValue("name", "", GlobalExceptionHandler.EXCEPTION_DUPLICATE_TITLE);
         });
     }
 }

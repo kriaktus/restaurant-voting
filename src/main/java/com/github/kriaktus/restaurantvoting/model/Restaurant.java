@@ -16,7 +16,7 @@ public class Restaurant extends NamedEntity implements HasId {
 
     @JoinColumn(name = "restaurant_id")
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("title")
+    @OrderBy("name")
     @ToString.Exclude
     private List<Dish> dishes;
 

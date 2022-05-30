@@ -34,10 +34,10 @@ create table DISH
 (
     id              int         primary key     auto_increment,
     restaurant_id   int         not null,
-    title           varchar     not null,
-    cost            int         not null,
+    name            varchar     not null,
+    price           int         not null,
     foreign key (restaurant_id) references RESTAURANT (id) on delete cascade,
-    constraint DISHES_UNIQUE_RESTAURANT_ID_TITLE_CONSTRAINT unique (restaurant_id, title)
+    constraint DISHES_UNIQUE_RESTAURANT_ID_NAME_CONSTRAINT unique (restaurant_id, name)
 );
 create index DISH_RESTAURANT_ID_IDX on DISH (restaurant_id);
 

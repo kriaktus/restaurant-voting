@@ -23,7 +23,7 @@ values ('Duo Gastrobar'),
        ('Duo Asia'),
        ('Мастер Кебаб');
 
-insert into DISH (restaurant_id, title, cost)
+insert into DISH (restaurant_id, name, price)
 values (1, 'Тартар из говядины с хумусом и пармезаном', 490),
        (1, 'Паста орзо с шеей бычка', 490),
        (1, 'Говядина Топ-блейд с трюфельным пюре', 590),

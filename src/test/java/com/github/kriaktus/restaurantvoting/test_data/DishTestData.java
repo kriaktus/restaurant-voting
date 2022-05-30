@@ -1,8 +1,8 @@
 package com.github.kriaktus.restaurantvoting.test_data;
 
+import com.github.kriaktus.restaurantvoting.model.Dish;
 import com.github.kriaktus.restaurantvoting.to.DishTo;
 import com.github.kriaktus.restaurantvoting.web.MatcherFactory;
-import com.github.kriaktus.restaurantvoting.model.Dish;
 
 import static com.github.kriaktus.restaurantvoting.test_data.RestaurantTestData.RESTAURANT1_ID;
 
@@ -28,8 +28,8 @@ public class DishTestData {
 
     public static Dish getUpdatedDish() {
         Dish updated = new Dish(dish1_3);
-        updated.setTitle("Биск из креветок с лймом");
-        updated.setCost(590);
+        updated.setName("Биск из креветок с лймом");
+        updated.setPrice(590);
         return updated;
     }
 }

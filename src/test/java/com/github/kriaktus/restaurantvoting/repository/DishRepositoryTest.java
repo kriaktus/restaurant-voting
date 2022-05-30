@@ -1,10 +1,10 @@
 package com.github.kriaktus.restaurantvoting.repository;
 
+import com.github.kriaktus.restaurantvoting.model.Dish;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import com.github.kriaktus.restaurantvoting.model.Dish;
 
 import javax.validation.ConstraintViolationException;
 
@@ -20,7 +20,7 @@ public class DishRepositoryTest extends AbstractRepositoryTest {
     @Test
     public void createDuplicateTitleAndRestaurant() {
         Dish duplicate = getNewDish();
-        duplicate.setTitle(dish1_1.getTitle());
+        duplicate.setName(dish1_1.getName());
         duplicate.setRestaurantId(dish1_1.getRestaurantId());
         Assertions.assertThrows(DataAccessException.class, () -> dishRepository.save(duplicate));
     }
@@ -40,9 +40,9 @@ public class DishRepositoryTest extends AbstractRepositoryTest {
 
     @Test
     public void deleteAllByRestaurant() {
-        Assertions.assertFalse(dishRepository.findAllByRestaurantIdOrderByTitle(RESTAURANT1_ID).isEmpty());
+        Assertions.assertFalse(dishRepository.findAllByRestaurantIdOrderByName(RESTAURANT1_ID).isEmpty());
         Assertions.assertNotEquals(0, dishRepository.deleteAllByRestaurantId(RESTAURANT1_ID));
-        Assertions.assertTrue(dishRepository.findAllByRestaurantIdOrderByTitle(RESTAURANT1_ID).isEmpty());
+        Assertions.assertTrue(dishRepository.findAllByRestaurantIdOrderByName(RESTAURANT1_ID).isEmpty());
     }
 
     @Test

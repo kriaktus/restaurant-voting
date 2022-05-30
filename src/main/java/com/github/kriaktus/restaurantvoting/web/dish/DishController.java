@@ -21,9 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static com.github.kriaktus.restaurantvoting.util.DishUtil.toDishTo;
-import static com.github.kriaktus.restaurantvoting.util.validation.ValidationUtil.checkNotFoundWithId;
-
 @RestController
 @RequestMapping(value = DishController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
@@ -44,6 +41,6 @@ public class DishController extends AbstractDishController {
     public List<DishTo> getAllByRestaurant(@PathVariable int restaurantId) {
         log.info("UserDishController#getAllByRestaurant(restaurantId:{})", restaurantId);
         ValidationUtil.checkNotFoundWithId(restaurantRepository.findById(restaurantId), restaurantId);
-        return DishUtil.toDishTo(dishRepository.findAllByRestaurantIdOrderByTitle(restaurantId));
+        return DishUtil.toDishTo(dishRepository.findAllByRestaurantIdOrderByName(restaurantId));
     }
 }

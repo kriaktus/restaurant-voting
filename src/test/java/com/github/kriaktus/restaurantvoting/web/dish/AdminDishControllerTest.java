@@ -125,7 +125,7 @@ public class AdminDishControllerTest extends AbstractControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
         DishTestData.DISH_MATCHER.assertMatch(
-                dishRepository.findAllByRestaurantIdOrderByTitle(RestaurantTestData.RESTAURANT1_ID),
+                dishRepository.findAllByRestaurantIdOrderByName(RestaurantTestData.RESTAURANT1_ID),
                 DishTestData.dish1_1, DishTestData.dish1_2, DishTestData.dish1_4);
     }
 
@@ -143,7 +143,7 @@ public class AdminDishControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.delete(REST_URL, RestaurantTestData.RESTAURANT1_ID))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
-        DishTestData.DISH_MATCHER.assertMatch(dishRepository.findAllByRestaurantIdOrderByTitle(RestaurantTestData.RESTAURANT1_ID), List.of());
+        DishTestData.DISH_MATCHER.assertMatch(dishRepository.findAllByRestaurantIdOrderByName(RestaurantTestData.RESTAURANT1_ID), List.of());
     }
 
     @Test
