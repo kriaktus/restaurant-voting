@@ -2,7 +2,10 @@ drop table if exists USERS cascade;
 drop table if exists RESTAURANT cascade;
 drop table if exists USER_ROLES;
 drop table if exists VOTE;
-drop table if exists DISH;
+drop table if exists MENU_MENU_ITEM;
+drop table if exists MENU_ITEM;
+drop table if exists MENU;
+
 
 create table USERS
 (
@@ -30,17 +33,6 @@ create table RESTAURANT
     constraint RESTAURANTS_UNIQUE_NAME unique (name)
 );
 
-create table DISH
-(
-    id              int         primary key     auto_increment,
-    restaurant_id   int         not null,
-    name            varchar     not null,
-    price           int         not null,
-    foreign key (restaurant_id) references RESTAURANT (id) on delete cascade,
-    constraint DISHES_UNIQUE_RESTAURANT_ID_NAME_CONSTRAINT unique (restaurant_id, name)
-);
-create index DISH_RESTAURANT_ID_IDX on DISH (restaurant_id);
-
 create table VOTE
 (
     id              int         primary key     auto_increment,
@@ -50,5 +42,33 @@ create table VOTE
     foreign key (user_id) references USERS (id) on delete cascade,
     foreign key (restaurant_id) references RESTAURANT (id) on delete cascade
 );
-create unique index VOTE_UNIQUE_USER_ID_VOTING_DATE_IDX on VOTE (user_id, voting_date);
 create index VOTE_VOTING_DATE_IDX on VOTE (voting_date);
+
+create table MENU_ITEM
+(
+    id              int         primary key     auto_increment,
+    restaurant_id   int         not null,
+    name            varchar     not null,
+    price           int         not null,
+    foreign key (restaurant_id) references RESTAURANT (id) on delete cascade
+);
+create index MENU_ITEM_RESTAURANT_ID_IDX on MENU_ITEM (restaurant_id);
+
+create table MENU
+(
+    id              int         primary key     auto_increment,
+    menu_date       date        not null        default current_date,
+    restaurant_id   int         not null,
+    foreign key (restaurant_id) references RESTAURANT (id) on delete cascade,
+    constraint MENU_UNIQUE_RESTAURANT_ID_MENU_DATE_CONSTRAINT unique (restaurant_id, menu_date)
+);
+create index MENU_DATE_RESTAURANT_ID_IDX on MENU (menu_date, restaurant_id);
+
+create table MENU_MENU_ITEM
+(
+    menu_id         int         not null,
+    menu_item_id    int         not null,
+    primary key (menu_id, menu_item_id),
+    foreign key (menu_id) references MENU (id) on delete cascade,
+    foreign key (menu_item_id) references MENU_ITEM (id) on delete cascade
+);

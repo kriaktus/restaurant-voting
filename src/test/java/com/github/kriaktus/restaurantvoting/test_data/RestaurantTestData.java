@@ -1,9 +1,10 @@
 package com.github.kriaktus.restaurantvoting.test_data;
 
-import com.github.kriaktus.restaurantvoting.web.MatcherFactory;
-import com.github.kriaktus.restaurantvoting.model.Dish;
+import com.github.kriaktus.restaurantvoting.model.MenuItem;
 import com.github.kriaktus.restaurantvoting.model.Restaurant;
 import com.github.kriaktus.restaurantvoting.to.RestaurantTo;
+import com.github.kriaktus.restaurantvoting.util.RestaurantUtil;
+import com.github.kriaktus.restaurantvoting.web.MatcherFactory;
 
 import java.util.List;
 
@@ -21,12 +22,12 @@ public class RestaurantTestData {
     public static final Restaurant restaurant3 = new Restaurant(RESTAURANT3_ID, "Duo Asia", List.of());
     public static final Restaurant restaurant4 = new Restaurant(RESTAURANT4_ID, "Мастер Кебаб", List.of());
 
-    public static Restaurant getNewRestaurant(Dish... dishes) {
-        return new Restaurant(null, "MODI", List.of(dishes));
+    public static Restaurant getNewRestaurant(MenuItem... menuItems) {
+        return new Restaurant(null, "MODI", List.of(menuItems));
     }
 
-    public static Restaurant getUpdatedRestaurant() {
-        Restaurant updated = new Restaurant(restaurant1);
+    public static RestaurantTo getUpdatedRestaurantTo() {
+        RestaurantTo updated = RestaurantUtil.toRestaurantTo(restaurant1);
         updated.setName("updatedName");
         return updated;
     }

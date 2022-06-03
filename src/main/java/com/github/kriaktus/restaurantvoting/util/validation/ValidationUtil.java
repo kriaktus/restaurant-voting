@@ -1,13 +1,13 @@
 package com.github.kriaktus.restaurantvoting.util.validation;
 
 import com.github.kriaktus.restaurantvoting.HasId;
+import com.github.kriaktus.restaurantvoting.error.AppException;
+import com.github.kriaktus.restaurantvoting.error.IllegalRequestDataException;
 import lombok.experimental.UtilityClass;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
-import com.github.kriaktus.restaurantvoting.error.AppException;
-import com.github.kriaktus.restaurantvoting.error.IllegalRequestDataException;
 
 import java.time.Clock;
 import java.time.LocalTime;
@@ -35,7 +35,7 @@ public class ValidationUtil {
 
     public static void checkModification(int count) {
         if (count == 0) {
-            throw new IllegalRequestDataException("Not found entity for modify");
+            throw new IllegalRequestDataException("Entity for modify not found");
         }
     }
 
@@ -46,7 +46,7 @@ public class ValidationUtil {
     }
 
     public static <T> T checkNotFoundWithId(T object, int id) {
-        checkNotFoundWithMessage(object != null, "Not found entity with id=" + id);
+        checkNotFoundWithMessage(object != null, "Entity with id=" + id + " not found");
         return object;
     }
 
@@ -60,7 +60,7 @@ public class ValidationUtil {
     }
 
     public static <T> T checkNotFoundWithId(Optional<T> optional, int id) {
-        return checkNotFoundWithMessage(optional, "Not found entity with id=" + id);
+        return checkNotFoundWithMessage(optional, "Entity with id=" + id + " not found");
     }
 
     public static <T> T checkNotFoundWithMessage(Optional<T> optional, String message) {

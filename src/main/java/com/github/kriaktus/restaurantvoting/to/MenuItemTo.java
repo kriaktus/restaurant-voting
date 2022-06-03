@@ -10,14 +10,17 @@ import javax.validation.constraints.Positive;
 @Value
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class DishTo extends NamedTo {
-
+public class MenuItemTo extends NamedTo {
     @NotNull
     @Positive
     Integer price;
 
-    public DishTo(Integer id, String name, Integer cost) {
+    public MenuItemTo(Integer id, String name, Integer price) {
         super(id, name);
-        this.price = cost;
+        this.price = price;
+    }
+
+    public MenuItemTo(MenuItemTo menuItemTo) {
+        this(menuItemTo.id, menuItemTo.name, menuItemTo.price);
     }
 }

@@ -18,19 +18,19 @@ public class Restaurant extends NamedEntity implements HasId {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("name")
     @ToString.Exclude
-    private List<Dish> dishes;
+    private List<MenuItem> menuItems;
 
-    public Restaurant(String name, List<Dish> dishes) {
+    public Restaurant(String name, List<MenuItem> menuItems) {
         super(name);
-        this.dishes = dishes;
+        this.menuItems = menuItems;
     }
 
-    public Restaurant(Integer id, String name, List<Dish> dishes) {
+    public Restaurant(Integer id, String name, List<MenuItem> menuItems) {
         super(id, name);
-        this.dishes = dishes;
+        this.menuItems = menuItems;
     }
 
     public Restaurant(Restaurant restaurant) {
-        this(restaurant.id, restaurant.name, restaurant.dishes);
+        this(restaurant.id, restaurant.name, restaurant.menuItems);
     }
 }

@@ -28,12 +28,12 @@ import org.springframework.context.annotation.Configuration;
         tags = {
                 @Tag(name = "ProfileController", description = "default user profile api"),
                 @Tag(name = "RestaurantController", description = "default user restaurants api"),
-                @Tag(name = "DishController", description = "default user dishes api"),
                 @Tag(name = "VoteController", description = "default user votes api"),
                 @Tag(name = "AdminUserController", description = "admin users api"),
                 @Tag(name = "AdminRestaurantController", description = "admin restaurants api"),
-                @Tag(name = "AdminDishController", description = "admin dishes api"),
-                @Tag(name = "AdminVoteController", description = "admin votes api")
+                @Tag(name = "AdminVoteController", description = "admin votes api"),
+                @Tag(name = "AdminMenuController", description = "admin menu api"),
+                @Tag(name = "AdminMenuItemController", description = "admin menu item api")
         },
         security = @SecurityRequirement(name = "basicAuth")
 )
