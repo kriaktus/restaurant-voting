@@ -4,7 +4,6 @@ import com.github.kriaktus.restaurantvoting.model.Restaurant;
 import com.github.kriaktus.restaurantvoting.repository.RestaurantRepository;
 import com.github.kriaktus.restaurantvoting.to.RestaurantTo;
 import com.github.kriaktus.restaurantvoting.util.JsonUtil;
-import com.github.kriaktus.restaurantvoting.util.RestaurantUtil;
 import com.github.kriaktus.restaurantvoting.web.AbstractControllerTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,10 +15,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.List;
+
 import static com.github.kriaktus.restaurantvoting.test_data.RestaurantTestData.*;
 import static com.github.kriaktus.restaurantvoting.test_data.UserTestData.*;
 import static com.github.kriaktus.restaurantvoting.util.RestaurantUtil.toRestaurantTo;
-import static com.github.kriaktus.restaurantvoting.util.validation.ValidationUtil.checkNotFoundWithId;
 
 public class AdminRestaurantControllerTest extends AbstractControllerTest {
 
@@ -29,33 +29,26 @@ public class AdminRestaurantControllerTest extends AbstractControllerTest {
 
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
-    void get() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "/{id}", RESTAURANT1_ID))
+    void getAll() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_TO_MATCHER.contentJson(RestaurantUtil.toRestaurantTo(restaurant1)));
+                .andExpect(RESTAURANT_TO_MATCHER.contentJson(List.of(toRestaurantTo(restaurant1), toRestaurantTo(restaurant2),
+                        toRestaurantTo(restaurant3), toRestaurantTo(restaurant4))));
     }
 
     @Test
-    @WithUserDetails(value = ADMIN_MAIL)
-    void getNotFound() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "/{id}", NOT_FOUND))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
-    }
-
-    @Test
-    void getUnAuth() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "/{id}", RESTAURANT1_ID))
+    void getAllUnAuth() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
     @WithUserDetails(value = USER_MAIL)
-    void getForbidden() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "/{id}", RESTAURANT1_ID))
+    void getAllForbidden() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
@@ -72,8 +65,8 @@ public class AdminRestaurantControllerTest extends AbstractControllerTest {
         RestaurantTo actual = RESTAURANT_TO_MATCHER.readFromJson(resultActions);
         int newId = actual.id();
         expected.setId(newId);
-        RESTAURANT_TO_MATCHER.assertMatch(expected, actual);
-        RESTAURANT_TO_MATCHER.assertMatch(toRestaurantTo(checkNotFoundWithId(restaurantRepository.findById(newId), newId)), expected);
+        RESTAURANT_TO_MATCHER.assertMatch(actual, expected);
+        RESTAURANT_TO_MATCHER.assertMatch(toRestaurantTo(restaurantRepository.findById(newId).orElseThrow()), expected);
     }
 
     @Test
@@ -97,7 +90,7 @@ public class AdminRestaurantControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(getUpdatedRestaurantTo())))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
-        RESTAURANT_TO_MATCHER.assertMatch(RestaurantUtil.toRestaurantTo(restaurantRepository.findById(RESTAURANT1_ID).orElseThrow()), expected);
+        RESTAURANT_TO_MATCHER.assertMatch(toRestaurantTo(restaurantRepository.findById(RESTAURANT1_ID).orElseThrow()), expected);
     }
 
     @Test

@@ -1,12 +1,15 @@
 package com.github.kriaktus.restaurantvoting.util;
 
-import lombok.experimental.UtilityClass;
+import com.github.kriaktus.restaurantvoting.model.Menu;
 import com.github.kriaktus.restaurantvoting.model.Restaurant;
 import com.github.kriaktus.restaurantvoting.to.RestaurantTo;
+import com.github.kriaktus.restaurantvoting.to.RestaurantWithMenuTo;
+import lombok.experimental.UtilityClass;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import static com.github.kriaktus.restaurantvoting.util.validation.ValidationUtil.checkNotFoundWithMessage;
 
 @UtilityClass
 public class RestaurantUtil {
@@ -19,15 +22,20 @@ public class RestaurantUtil {
         return new RestaurantTo(restaurant.getId(), restaurant.getName());
     }
 
+    public static RestaurantWithMenuTo toRestaurantWithMenuTo(Restaurant restaurant) {
+        Menu actualMenu = checkNotFoundWithMessage(restaurant.getMenu().stream().findFirst(), "Actual menu not found");
+        return new RestaurantWithMenuTo(restaurant.getId(), restaurant.getName(), MenuUtil.toMenuTo(actualMenu));
+    }
+
     public static List<RestaurantTo> toRestaurantTo(Collection<Restaurant> restaurants) {
         return restaurants.stream()
                 .map(RestaurantUtil::toRestaurantTo)
                 .toList();
     }
 
-    public static List<RestaurantTo> toRestaurantTo(Restaurant... restaurants) {
-        return Arrays.stream(restaurants)
-                .map(RestaurantUtil::toRestaurantTo)
+    public static List<RestaurantWithMenuTo> toRestaurantWithMenuTo(Collection<Restaurant> restaurants) {
+        return restaurants.stream()
+                .map(RestaurantUtil::toRestaurantWithMenuTo)
                 .toList();
     }
 

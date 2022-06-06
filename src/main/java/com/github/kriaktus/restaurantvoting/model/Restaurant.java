@@ -1,10 +1,9 @@
 package com.github.kriaktus.restaurantvoting.model;
 
-import com.github.kriaktus.restaurantvoting.HasId;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "restaurant")
@@ -12,25 +11,24 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(callSuper = true)
-public class Restaurant extends NamedEntity implements HasId {
+public class Restaurant extends NamedEntity {
 
     @JoinColumn(name = "restaurant_id")
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("name")
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     @ToString.Exclude
-    private List<MenuItem> menuItems;
+    private Set<Menu> menu;
 
-    public Restaurant(String name, List<MenuItem> menuItems) {
+    public Restaurant(String name, Set<Menu> menu) {
         super(name);
-        this.menuItems = menuItems;
+        this.menu = menu;
     }
 
-    public Restaurant(Integer id, String name, List<MenuItem> menuItems) {
+    public Restaurant(Integer id, String name, Set<Menu> menu) {
         super(id, name);
-        this.menuItems = menuItems;
+        this.menu = menu;
     }
 
     public Restaurant(Restaurant restaurant) {
-        this(restaurant.id, restaurant.name, restaurant.menuItems);
+        this(restaurant.id, restaurant.name, restaurant.menu);
     }
 }

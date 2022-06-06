@@ -1,21 +1,21 @@
 package com.github.kriaktus.restaurantvoting.util;
 
+import com.github.kriaktus.restaurantvoting.model.Vote;
 import com.github.kriaktus.restaurantvoting.to.VoteTo;
 import lombok.experimental.UtilityClass;
-import com.github.kriaktus.restaurantvoting.model.Restaurant;
-import com.github.kriaktus.restaurantvoting.model.Vote;
-import com.github.kriaktus.restaurantvoting.to.RestaurantTo;
 
 import java.util.Collection;
 import java.util.List;
+
+import static com.github.kriaktus.restaurantvoting.util.RestaurantUtil.toRestaurantTo;
 
 @UtilityClass
 public class VoteUtil {
 
     public static VoteTo toVoteTo(Vote vote) {
-        Restaurant restaurant = vote.getRestaurant();
-        return new VoteTo(vote.getId(), vote.getVotingDate(), new RestaurantTo(restaurant.getId(), restaurant.getName()));
+        return new VoteTo(vote.getId(), vote.getVotingDate(), toRestaurantTo(vote.getRestaurant()));
     }
+
     public static List<VoteTo> toVoteTo(Collection<Vote> votes) {
         return votes.stream()
                 .map(VoteUtil::toVoteTo)

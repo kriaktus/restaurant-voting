@@ -24,7 +24,7 @@ public class Menu extends BaseEntity {
     @Column(name = "restaurant_id", nullable = false)
     private Integer restaurantId;
 
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "menu_menu_item",
             joinColumns = {@JoinColumn(name = "menu_id")},

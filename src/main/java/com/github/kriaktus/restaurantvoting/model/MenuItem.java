@@ -31,14 +31,4 @@ public class MenuItem extends NamedEntity {
         this.price = price;
         this.restaurantId = restaurantId;
     }
-
-    public MenuItem(String name, Integer price, Integer restaurantId) {
-        super.setName(name);
-        this.price = price;
-        this.restaurantId = restaurantId;
-    }
-
-    public MenuItem(MenuItem menuItem) {
-        this(menuItem.id, menuItem.name, menuItem.price, menuItem.restaurantId);
-    }
 }

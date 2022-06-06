@@ -2,9 +2,7 @@ package com.github.kriaktus.restaurantvoting.to;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import lombok.Value;
 
-@Value
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class RestaurantTo extends NamedTo {
