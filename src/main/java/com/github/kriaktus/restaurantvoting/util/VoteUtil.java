@@ -7,13 +7,11 @@ import lombok.experimental.UtilityClass;
 import java.util.Collection;
 import java.util.List;
 
-import static com.github.kriaktus.restaurantvoting.util.RestaurantUtil.toRestaurantTo;
-
 @UtilityClass
 public class VoteUtil {
 
     public static VoteTo toVoteTo(Vote vote) {
-        return new VoteTo(vote.getId(), vote.getVotingDate(), toRestaurantTo(vote.getRestaurant()));
+        return new VoteTo(vote.getId(), vote.getVotingDate(), vote.getRestaurant().getId());
     }
 
     public static List<VoteTo> toVoteTo(Collection<Vote> votes) {

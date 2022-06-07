@@ -24,7 +24,7 @@ public class Vote extends BaseEntity {
     private LocalDate votingDate;
 
     @JoinColumn(name = "restaurant_id", nullable = false)
-    @ManyToOne(cascade = CascadeType.MERGE, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @NotNull
     private Restaurant restaurant;
 

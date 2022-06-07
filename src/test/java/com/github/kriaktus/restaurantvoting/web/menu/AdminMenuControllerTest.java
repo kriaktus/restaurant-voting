@@ -1,12 +1,11 @@
-package com.github.kriaktus.restaurantvoting.web;
+package com.github.kriaktus.restaurantvoting.web.menu;
 
 import com.github.kriaktus.restaurantvoting.repository.MenuRepository;
-import com.github.kriaktus.restaurantvoting.test_data.UserTestData;
+import com.github.kriaktus.restaurantvoting.testdata.UserTestData;
 import com.github.kriaktus.restaurantvoting.to.MenuItemTo;
 import com.github.kriaktus.restaurantvoting.to.MenuTo;
 import com.github.kriaktus.restaurantvoting.util.JsonUtil;
-import com.github.kriaktus.restaurantvoting.util.MenuUtil;
-import com.github.kriaktus.restaurantvoting.web.menuitem.AdminMenuItemController;
+import com.github.kriaktus.restaurantvoting.web.AbstractControllerTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +19,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.github.kriaktus.restaurantvoting.test_data.MenuItemTestData.menuItemTo1_4;
-import static com.github.kriaktus.restaurantvoting.test_data.MenuItemTestData.menuItemTo2_1;
-import static com.github.kriaktus.restaurantvoting.test_data.MenuTestData.*;
-import static com.github.kriaktus.restaurantvoting.test_data.RestaurantTestData.RESTAURANT1_ID;
-import static com.github.kriaktus.restaurantvoting.test_data.RestaurantTestData.RESTAURANT4_ID;
-import static com.github.kriaktus.restaurantvoting.test_data.UserTestData.NOT_FOUND;
+import static com.github.kriaktus.restaurantvoting.testdata.MenuItemTestData.menuItemTo1_4;
+import static com.github.kriaktus.restaurantvoting.testdata.MenuItemTestData.menuItemTo2_1;
+import static com.github.kriaktus.restaurantvoting.testdata.MenuTestData.*;
+import static com.github.kriaktus.restaurantvoting.testdata.RestaurantTestData.RESTAURANT1_ID;
+import static com.github.kriaktus.restaurantvoting.testdata.RestaurantTestData.RESTAURANT4_ID;
+import static com.github.kriaktus.restaurantvoting.testdata.UserTestData.NOT_FOUND;
+import static com.github.kriaktus.restaurantvoting.util.MenuUtil.toMenuTo;
 import static com.github.kriaktus.restaurantvoting.web.menu.AdminMenuController.REST_URL;
 
 public class AdminMenuControllerTest extends AbstractControllerTest {
@@ -52,7 +52,7 @@ public class AdminMenuControllerTest extends AbstractControllerTest {
 
     @Test
     void getActualUnAuth() throws Exception {
-        perform(MockMvcRequestBuilders.get(AdminMenuItemController.REST_URL + "/actual", RESTAURANT1_ID))
+        perform(MockMvcRequestBuilders.get(REST_URL + "/actual", RESTAURANT1_ID))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
@@ -60,7 +60,7 @@ public class AdminMenuControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = UserTestData.USER_MAIL)
     void getActualForbidden() throws Exception {
-        perform(MockMvcRequestBuilders.get(AdminMenuItemController.REST_URL + "/actual", RESTAURANT1_ID))
+        perform(MockMvcRequestBuilders.get(REST_URL + "/actual", RESTAURANT1_ID))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
@@ -68,7 +68,8 @@ public class AdminMenuControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = UserTestData.ADMIN_MAIL)
     void getByDate() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "/by-date", RESTAURANT1_ID).queryParam("date", LocalDate.now().toString()))
+        perform(MockMvcRequestBuilders.get(REST_URL + "/by-date", RESTAURANT1_ID)
+                .queryParam("date", LocalDate.now().toString()))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -78,7 +79,8 @@ public class AdminMenuControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = UserTestData.ADMIN_MAIL)
     void getByDateNotFound() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "/by-date", RESTAURANT1_ID).queryParam("date", LocalDate.MAX.toString()))
+        perform(MockMvcRequestBuilders.get(REST_URL + "/by-date", RESTAURANT1_ID)
+                .queryParam("date", LocalDate.MAX.toString()))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
@@ -101,16 +103,15 @@ public class AdminMenuControllerTest extends AbstractControllerTest {
             expectedItems.get(i).setId(actualItems.get(i).getId());
         }
         MENU_TO_MATCHER.assertMatch(actual, expected);
-        MENU_TO_MATCHER.assertMatch(MenuUtil.toMenuTo(menuRepository.findByDateAndRestaurantId(LocalDate.now(), RESTAURANT4_ID).orElseThrow()), expected);
+        MENU_TO_MATCHER.assertMatch(toMenuTo(menuRepository.findByDateAndRestaurantId(LocalDate.now(), RESTAURANT4_ID).get()), expected);
     }
 
     @Test
     @WithUserDetails(value = UserTestData.ADMIN_MAIL)
     void createActualAlreadyExist() throws Exception {
-        MenuTo menuTo = getNewMenuTo();
         perform(MockMvcRequestBuilders.post(REST_URL, RESTAURANT1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(menuTo)))
+                .content(JsonUtil.writeValue(getNewMenuTo())))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
@@ -137,7 +138,7 @@ public class AdminMenuControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(expected)))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
-        MENU_TO_MATCHER.assertMatch(MenuUtil.toMenuTo(menuRepository.findByDateAndRestaurantId(LocalDate.now(), RESTAURANT1_ID).orElseThrow()), expected);
+        MENU_TO_MATCHER.assertMatch(toMenuTo(menuRepository.findByDateAndRestaurantId(LocalDate.now(), RESTAURANT1_ID).get()), expected);
     }
 
     @Test
@@ -180,7 +181,7 @@ public class AdminMenuControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.delete(REST_URL + "/actual", RESTAURANT1_ID))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
-        Assertions.assertNull(menuRepository.findByDateAndRestaurantId(LocalDate.now(), RESTAURANT1_ID).orElse(null));
+        Assertions.assertTrue(menuRepository.findByDateAndRestaurantId(LocalDate.now(), RESTAURANT1_ID).isEmpty());
     }
 
     @Test

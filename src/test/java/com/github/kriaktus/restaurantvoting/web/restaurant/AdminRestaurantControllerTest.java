@@ -1,6 +1,5 @@
 package com.github.kriaktus.restaurantvoting.web.restaurant;
 
-import com.github.kriaktus.restaurantvoting.model.Restaurant;
 import com.github.kriaktus.restaurantvoting.repository.RestaurantRepository;
 import com.github.kriaktus.restaurantvoting.to.RestaurantTo;
 import com.github.kriaktus.restaurantvoting.util.JsonUtil;
@@ -17,13 +16,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
 
-import static com.github.kriaktus.restaurantvoting.test_data.RestaurantTestData.*;
-import static com.github.kriaktus.restaurantvoting.test_data.UserTestData.*;
+import static com.github.kriaktus.restaurantvoting.testdata.RestaurantTestData.*;
+import static com.github.kriaktus.restaurantvoting.testdata.UserTestData.*;
 import static com.github.kriaktus.restaurantvoting.util.RestaurantUtil.toRestaurantTo;
+import static com.github.kriaktus.restaurantvoting.web.restaurant.AdminRestaurantController.REST_URL;
 
 public class AdminRestaurantControllerTest extends AbstractControllerTest {
-
-    public static final String REST_URL = "/api/admin/restaurants";
     @Autowired
     private RestaurantRepository restaurantRepository;
 
@@ -34,8 +32,7 @@ public class AdminRestaurantControllerTest extends AbstractControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_TO_MATCHER.contentJson(List.of(toRestaurantTo(restaurant1), toRestaurantTo(restaurant2),
-                        toRestaurantTo(restaurant3), toRestaurantTo(restaurant4))));
+                .andExpect(RESTAURANT_TO_MATCHER.contentJson(List.of(restaurantTo1, restaurantTo2, restaurantTo3, restaurantTo4)));
     }
 
     @Test
@@ -56,24 +53,24 @@ public class AdminRestaurantControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void create() throws Exception {
-        RestaurantTo expected = toRestaurantTo(getNewRestaurant());
+        RestaurantTo expected = getNewRestaurantTo();
         ResultActions resultActions = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(getNewRestaurant())))
+                .content(JsonUtil.writeValue(getNewRestaurantTo())))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isCreated());
         RestaurantTo actual = RESTAURANT_TO_MATCHER.readFromJson(resultActions);
         int newId = actual.id();
         expected.setId(newId);
         RESTAURANT_TO_MATCHER.assertMatch(actual, expected);
-        RESTAURANT_TO_MATCHER.assertMatch(toRestaurantTo(restaurantRepository.findById(newId).orElseThrow()), expected);
+        RESTAURANT_TO_MATCHER.assertMatch(toRestaurantTo(restaurantRepository.findById(newId).get()), expected);
     }
 
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void createDuplicateName() throws Exception {
-        Restaurant duplicate = getNewRestaurant();
-        duplicate.setName(restaurant2.getName());
+        RestaurantTo duplicate = getNewRestaurantTo();
+        duplicate.setName(restaurantTo2.getName());
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(duplicate)))
@@ -90,14 +87,14 @@ public class AdminRestaurantControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(getUpdatedRestaurantTo())))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
-        RESTAURANT_TO_MATCHER.assertMatch(toRestaurantTo(restaurantRepository.findById(RESTAURANT1_ID).orElseThrow()), expected);
+        RESTAURANT_TO_MATCHER.assertMatch(toRestaurantTo(restaurantRepository.findById(RESTAURANT1_ID).get()), expected);
     }
 
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void updateDuplicateName() throws Exception {
         RestaurantTo duplicate = getUpdatedRestaurantTo();
-        duplicate.setName(restaurant2.getName());
+        duplicate.setName(restaurantTo2.getName());
         perform(MockMvcRequestBuilders.put(REST_URL + "/{id}", RESTAURANT1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(duplicate)))

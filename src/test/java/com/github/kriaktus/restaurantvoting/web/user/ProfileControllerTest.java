@@ -2,7 +2,7 @@ package com.github.kriaktus.restaurantvoting.web.user;
 
 import com.github.kriaktus.restaurantvoting.model.User;
 import com.github.kriaktus.restaurantvoting.repository.UserRepository;
-import com.github.kriaktus.restaurantvoting.test_data.UserTestData;
+import com.github.kriaktus.restaurantvoting.testdata.UserTestData;
 import com.github.kriaktus.restaurantvoting.to.UserTo;
 import com.github.kriaktus.restaurantvoting.util.JsonUtil;
 import com.github.kriaktus.restaurantvoting.util.UserUtil;

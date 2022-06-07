@@ -41,7 +41,7 @@ public class AdminRestaurantController extends AbstractRestaurantController {
     @ApiResponses(@ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = RestaurantTo.class)))))
     @GetMapping
     public List<RestaurantTo> getAll() {
-        log.info("RestaurantController#getAll()");
+        log.info("AdminRestaurantController#getAll()");
         return toRestaurantTo(restaurantRepository.findAll());
     }
 

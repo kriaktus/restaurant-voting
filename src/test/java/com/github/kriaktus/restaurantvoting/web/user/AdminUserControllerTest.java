@@ -3,7 +3,7 @@ package com.github.kriaktus.restaurantvoting.web.user;
 import com.github.kriaktus.restaurantvoting.model.Role;
 import com.github.kriaktus.restaurantvoting.model.User;
 import com.github.kriaktus.restaurantvoting.repository.UserRepository;
-import com.github.kriaktus.restaurantvoting.test_data.UserTestData;
+import com.github.kriaktus.restaurantvoting.testdata.UserTestData;
 import com.github.kriaktus.restaurantvoting.web.AbstractControllerTest;
 import com.github.kriaktus.restaurantvoting.web.GlobalExceptionHandler;
 import org.junit.jupiter.api.Test;

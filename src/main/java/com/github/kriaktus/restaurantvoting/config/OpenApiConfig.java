@@ -31,7 +31,6 @@ import org.springframework.context.annotation.Configuration;
                 @Tag(name = "VoteController", description = "default user votes api"),
                 @Tag(name = "AdminUserController", description = "admin users api"),
                 @Tag(name = "AdminRestaurantController", description = "admin restaurants api"),
-                @Tag(name = "AdminVoteController", description = "admin votes api"),
                 @Tag(name = "AdminMenuController", description = "admin menu api"),
                 @Tag(name = "AdminMenuItemController", description = "admin menu item api")
         },

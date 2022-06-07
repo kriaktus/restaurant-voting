@@ -1,13 +1,11 @@
-package com.github.kriaktus.restaurantvoting.web;
+package com.github.kriaktus.restaurantvoting.web.menuitem;
 
 import com.github.kriaktus.restaurantvoting.repository.MenuItemRepository;
 import com.github.kriaktus.restaurantvoting.repository.MenuRepository;
-import com.github.kriaktus.restaurantvoting.test_data.MenuItemTestData;
-import com.github.kriaktus.restaurantvoting.test_data.UserTestData;
+import com.github.kriaktus.restaurantvoting.testdata.UserTestData;
 import com.github.kriaktus.restaurantvoting.to.MenuItemTo;
 import com.github.kriaktus.restaurantvoting.util.JsonUtil;
-import com.github.kriaktus.restaurantvoting.util.MenuItemUtil;
-import com.github.kriaktus.restaurantvoting.util.MenuUtil;
+import com.github.kriaktus.restaurantvoting.web.AbstractControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -19,10 +17,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDate;
 
-import static com.github.kriaktus.restaurantvoting.test_data.MenuItemTestData.*;
-import static com.github.kriaktus.restaurantvoting.test_data.RestaurantTestData.RESTAURANT1_ID;
-import static com.github.kriaktus.restaurantvoting.test_data.RestaurantTestData.RESTAURANT4_ID;
-import static com.github.kriaktus.restaurantvoting.test_data.UserTestData.NOT_FOUND;
+import static com.github.kriaktus.restaurantvoting.testdata.MenuItemTestData.*;
+import static com.github.kriaktus.restaurantvoting.testdata.RestaurantTestData.RESTAURANT1_ID;
+import static com.github.kriaktus.restaurantvoting.testdata.RestaurantTestData.RESTAURANT4_ID;
+import static com.github.kriaktus.restaurantvoting.testdata.UserTestData.NOT_FOUND;
+import static com.github.kriaktus.restaurantvoting.util.MenuItemUtil.toMenuItemTo;
+import static com.github.kriaktus.restaurantvoting.util.MenuUtil.toMenuTo;
 import static com.github.kriaktus.restaurantvoting.web.menuitem.AdminMenuItemController.REST_URL;
 
 public class AdminMenuItemControllerTest extends AbstractControllerTest {
@@ -77,16 +77,15 @@ public class AdminMenuItemControllerTest extends AbstractControllerTest {
         Integer id = actual.getId();
         expected.setId(id);
         MENU_ITEM_TO_MATCHER.assertMatch(actual, expected);
-        MENU_ITEM_TO_MATCHER.assertMatch(MenuItemUtil.toMenuItemTo(menuItemRepository.findFromActiveMenuByIdAndRestaurantId(id, RESTAURANT1_ID).orElseThrow()), expected);
+        MENU_ITEM_TO_MATCHER.assertMatch(toMenuItemTo(menuItemRepository.findFromActiveMenuByIdAndRestaurantId(id, RESTAURANT1_ID).get()), expected);
     }
 
     @Test
     @WithUserDetails(value = UserTestData.ADMIN_MAIL)
     void createWithLocationToActualMenuDuplicateName() throws Exception {
-        MenuItemTo duplicateNameMenuItemTo = getDuplicateNameMenuItemTo();
         perform(MockMvcRequestBuilders.post(REST_URL, RESTAURANT1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(duplicateNameMenuItemTo)))
+                .content(JsonUtil.writeValue(getDuplicateNameMenuItemTo())))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
@@ -94,10 +93,9 @@ public class AdminMenuItemControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = UserTestData.ADMIN_MAIL)
     void createWithLocationToActualMenuRestaurantNotFound() throws Exception {
-        MenuItemTo menuItemTo = getNewMenuItemTo();
         perform(MockMvcRequestBuilders.post(REST_URL, NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(menuItemTo)))
+                .content(JsonUtil.writeValue(getNewMenuItemTo())))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
@@ -105,10 +103,9 @@ public class AdminMenuItemControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = UserTestData.ADMIN_MAIL)
     void createWithLocationToActualMenuActiveMenuNotExist() throws Exception {
-        MenuItemTo menuItemTo = getNewMenuItemTo();
         perform(MockMvcRequestBuilders.post(REST_URL, RESTAURANT4_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(menuItemTo)))
+                .content(JsonUtil.writeValue(getNewMenuItemTo())))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
@@ -123,17 +120,15 @@ public class AdminMenuItemControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(getUpdatedMenuItemTo())))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
-        menuItemRepository.findFromActiveMenuByIdAndRestaurantId(id, RESTAURANT1_ID);
-        MENU_ITEM_TO_MATCHER.assertMatch(MenuItemUtil.toMenuItemTo(menuItemRepository.findFromActiveMenuByIdAndRestaurantId(id, RESTAURANT1_ID).orElseThrow()), expected);
+        MENU_ITEM_TO_MATCHER.assertMatch(toMenuItemTo(menuItemRepository.findFromActiveMenuByIdAndRestaurantId(id, RESTAURANT1_ID).get()), expected);
     }
 
     @Test
     @WithUserDetails(value = UserTestData.ADMIN_MAIL)
     void updateInActualMenuDuplicateName() throws Exception {
-        MenuItemTo duplicateTitleMenuItemTo = getDuplicateNameMenuItemTo();
         perform(MockMvcRequestBuilders.put(REST_URL + "/{id}", RESTAURANT1_ID, MENU_ITEM_TO_1_1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(duplicateTitleMenuItemTo)))
+                .content(JsonUtil.writeValue(getDuplicateNameMenuItemTo())))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
@@ -141,10 +136,10 @@ public class AdminMenuItemControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = UserTestData.ADMIN_MAIL)
     void deleteFromActualMenu() throws Exception {
-        perform(MockMvcRequestBuilders.delete(REST_URL + "/{id}", RESTAURANT1_ID, MenuItemTestData.MENU_ITEM_TO_1_1_ID))
+        perform(MockMvcRequestBuilders.delete(REST_URL + "/{id}", RESTAURANT1_ID, MENU_ITEM_TO_1_1_ID))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
-        MENU_ITEM_TO_MATCHER.assertMatch(MenuUtil.toMenuTo(menuRepository.findByDateAndRestaurantId(LocalDate.now(), RESTAURANT1_ID).orElseThrow()).getItems(),
+        MENU_ITEM_TO_MATCHER.assertMatch(toMenuTo(menuRepository.findByDateAndRestaurantId(LocalDate.now(), RESTAURANT1_ID).get()).getItems(),
                 menuItemTo1_2, menuItemTo1_3, menuItemTo1_4);
 
     }

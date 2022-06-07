@@ -1,4 +1,4 @@
-package com.github.kriaktus.restaurantvoting.test_data;
+package com.github.kriaktus.restaurantvoting.testdata;
 
 import com.github.kriaktus.restaurantvoting.to.MenuItemTo;
 import com.github.kriaktus.restaurantvoting.web.MatcherFactory;

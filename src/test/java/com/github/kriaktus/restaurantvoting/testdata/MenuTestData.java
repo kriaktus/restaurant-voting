@@ -1,4 +1,4 @@
-package com.github.kriaktus.restaurantvoting.test_data;
+package com.github.kriaktus.restaurantvoting.testdata;
 
 import com.github.kriaktus.restaurantvoting.to.MenuItemTo;
 import com.github.kriaktus.restaurantvoting.to.MenuTo;
@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.github.kriaktus.restaurantvoting.test_data.MenuItemTestData.*;
+import static com.github.kriaktus.restaurantvoting.testdata.MenuItemTestData.*;
 
 public class MenuTestData {
     public static final MatcherFactory.Matcher<MenuTo> MENU_TO_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(MenuTo.class);
@@ -27,9 +27,9 @@ public class MenuTestData {
     public static MenuTo getUpdatedMenuTo() {
         MenuTo updatedMenuTo = new MenuTo(menuTo1.getId(), menuTo1.getMenuDate(), new ArrayList<>());
         List<MenuItemTo> items = updatedMenuTo.getItems();
-        items.add(new MenuItemTo(MENU_ITEM_TO_1_3_ID, "Блюдо1", 590));
-        items.add(new MenuItemTo(MENU_ITEM_TO_1_2_ID, "Блюдо2", 590));
         items.add(new MenuItemTo(MENU_ITEM_TO_1_1_ID, "Блюдо3", 590));
+        items.add(new MenuItemTo(MENU_ITEM_TO_1_2_ID, "Блюдо2", 590));
+        items.add(new MenuItemTo(MENU_ITEM_TO_1_3_ID, "Блюдо1", 590));
         items.add(new MenuItemTo(MENU_ITEM_TO_1_4_ID, "Тартар из говядины со шпинатом и трюфельным понзу", 590));
         return updatedMenuTo;
     }

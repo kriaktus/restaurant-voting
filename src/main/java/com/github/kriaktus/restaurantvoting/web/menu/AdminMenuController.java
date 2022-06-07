@@ -88,8 +88,8 @@ public class AdminMenuController {
                 menuTo, checkNotFoundWithId(restaurantRepository.findById(restaurantId), restaurantId).getId())
         );
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(REST_URL + "/{id}")
-                .buildAndExpand(restaurantId, created.getId())
+                .path(REST_URL + "/actual")
+                .buildAndExpand(restaurantId)
                 .toUri();
         return ResponseEntity.created(uriOfNewResource).body(toMenuTo(created));
     }

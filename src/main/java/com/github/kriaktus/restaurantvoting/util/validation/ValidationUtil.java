@@ -17,6 +17,7 @@ import static org.springframework.boot.web.error.ErrorAttributeOptions.Include.M
 
 @UtilityClass
 public class ValidationUtil {
+    public static final LocalTime DEADLINE_CHANGE_VOICE = LocalTime.of(11, 0);
 
     public static void checkNew(HasId bean) {
         if (!bean.isNew()) {
@@ -69,9 +70,9 @@ public class ValidationUtil {
         });
     }
 
-    public static void compareCurrentTimeWith(LocalTime localTime, boolean isAfter, String message, Clock clock) {
-        if (LocalTime.now(clock).isAfter(localTime) ^ !isAfter)
-            throw new AppException(HttpStatus.NOT_ACCEPTABLE, message, ErrorAttributeOptions.of(MESSAGE));
+    public static void compareCurrentTimeWithDeadline(Clock clock) {
+        if (LocalTime.now(clock).isAfter(DEADLINE_CHANGE_VOICE))
+            throw new AppException(HttpStatus.LOCKED, "You can't change your voice after 11:00", ErrorAttributeOptions.of(MESSAGE));
     }
 
     //  https://stackoverflow.com/a/65442410/548473

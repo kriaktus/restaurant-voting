@@ -1,6 +1,6 @@
 package com.github.kriaktus.restaurantvoting.web.restaurant;
 
-import com.github.kriaktus.restaurantvoting.test_data.UserTestData;
+import com.github.kriaktus.restaurantvoting.testdata.UserTestData;
 import com.github.kriaktus.restaurantvoting.web.AbstractControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -11,14 +11,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
 
-import static com.github.kriaktus.restaurantvoting.test_data.RestaurantTestData.*;
-import static com.github.kriaktus.restaurantvoting.test_data.UserTestData.NOT_FOUND;
-import static com.github.kriaktus.restaurantvoting.util.RestaurantUtil.toRestaurantTo;
+import static com.github.kriaktus.restaurantvoting.testdata.RestaurantTestData.*;
+import static com.github.kriaktus.restaurantvoting.testdata.UserTestData.NOT_FOUND;
 import static com.github.kriaktus.restaurantvoting.util.RestaurantUtil.toRestaurantWithMenuTo;
+import static com.github.kriaktus.restaurantvoting.web.restaurant.RestaurantController.REST_URL;
 
 public class RestaurantControllerTest extends AbstractControllerTest {
-
-    public static final String REST_URL = "/api/restaurants";
 
     @Test
     @WithUserDetails(value = UserTestData.USER_MAIL)
@@ -27,7 +25,7 @@ public class RestaurantControllerTest extends AbstractControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_TO_MATCHER.contentJson(toRestaurantTo(restaurant1)));
+                .andExpect(RESTAURANT_TO_MATCHER.contentJson(restaurantTo1));
     }
 
     @Test
@@ -60,7 +58,7 @@ public class RestaurantControllerTest extends AbstractControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_TO_MATCHER.contentJson(List.of(toRestaurantTo(restaurant1), toRestaurantTo(restaurant2), toRestaurantTo(restaurant3))));
+                .andExpect(RESTAURANT_TO_MATCHER.contentJson(List.of(restaurantTo1, restaurantTo2, restaurantTo3)));
     }
 
     @Test

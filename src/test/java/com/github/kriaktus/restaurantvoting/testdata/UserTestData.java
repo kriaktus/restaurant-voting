@@ -1,9 +1,9 @@
-package com.github.kriaktus.restaurantvoting.test_data;
+package com.github.kriaktus.restaurantvoting.testdata;
 
-import com.github.kriaktus.restaurantvoting.web.MatcherFactory;
 import com.github.kriaktus.restaurantvoting.model.Role;
 import com.github.kriaktus.restaurantvoting.model.User;
 import com.github.kriaktus.restaurantvoting.util.JsonUtil;
+import com.github.kriaktus.restaurantvoting.web.MatcherFactory;
 
 import java.util.Collections;
 import java.util.Date;

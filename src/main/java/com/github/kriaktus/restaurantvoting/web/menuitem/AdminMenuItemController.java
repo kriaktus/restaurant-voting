@@ -101,7 +101,7 @@ public class AdminMenuItemController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
     public void deleteFromActualMenu(@PathVariable int id, @PathVariable int restaurantId) {
-        log.info("AdminMenuItemController#delete(id:{}, restaurantId:{})", id, restaurantId);
+        log.info("AdminMenuItemController#deleteFromActualMenu(id:{}, restaurantId:{})", id, restaurantId);
         MenuItem itemToRemove = checkNotFoundWithId(menuItemRepository.findFromActiveMenuByIdAndRestaurantId(id, restaurantId), id);
         getActualMenuItems(restaurantId).remove(itemToRemove);
     }
