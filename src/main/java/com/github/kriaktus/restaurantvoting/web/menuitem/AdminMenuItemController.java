@@ -1,12 +1,10 @@
 package com.github.kriaktus.restaurantvoting.web.menuitem;
 
-import com.github.kriaktus.restaurantvoting.model.Menu;
 import com.github.kriaktus.restaurantvoting.model.MenuItem;
 import com.github.kriaktus.restaurantvoting.repository.MenuItemRepository;
 import com.github.kriaktus.restaurantvoting.repository.MenuRepository;
 import com.github.kriaktus.restaurantvoting.repository.RestaurantRepository;
 import com.github.kriaktus.restaurantvoting.to.MenuItemTo;
-import com.github.kriaktus.restaurantvoting.util.MenuItemUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,8 +24,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
+import static com.github.kriaktus.restaurantvoting.util.MenuItemUtil.fromMenuItemToAndRestaurantId;
+import static com.github.kriaktus.restaurantvoting.util.MenuItemUtil.toMenuItemTo;
 import static com.github.kriaktus.restaurantvoting.util.validation.ValidationUtil.*;
 
 @RestController
@@ -42,13 +42,13 @@ public class AdminMenuItemController {
     private MenuItemRepository menuItemRepository;
     private MenuRepository menuRepository;
     private RestaurantRepository restaurantRepository;
-    private MenuItemToValidator menuItemToValidator;
+    private UniqueMenuItemToValidator uniqueMenuItemToValidator;
 
     public static final String REST_URL = "/api/admin/restaurants/{restaurantId}/menu/actual/menu-item";
 
     @InitBinder
     protected void initBinder(WebDataBinder webDataBinder) {
-        webDataBinder.addValidators(menuItemToValidator);
+        webDataBinder.addValidators(uniqueMenuItemToValidator);
     }
 
     @Operation(summary = "#getFromActualMenu", description = "Get menu item by id from the restaurant (with id={restaurantId}) actual menu")
@@ -58,8 +58,8 @@ public class AdminMenuItemController {
     @GetMapping("/{id}")
     public MenuItemTo getFromActualMenu(@PathVariable int id, @PathVariable int restaurantId) {
         log.info("AdminMenuItemController#getFromActualMenu(id:{}, restaurantId:{})", id, restaurantId);
-        return MenuItemUtil.toMenuItemTo(checkNotFoundWithMessage(menuItemRepository.findFromActiveMenuByIdAndRestaurantId(id, restaurantId),
-                String.format("Menu item with id=%d and restaurantId=%d not found", id, restaurantId)));
+        return toMenuItemTo(checkNotFoundWithMessage(menuItemRepository.findFromActiveMenuByIdAndRestaurantId(id, restaurantId),
+                String.format("Menu item with id=%d and restaurantId=%d not found in actual menu", id, restaurantId)));
     }
 
     @Operation(summary = "#createWithLocationToActualMenu", description = "Create new menu item in restaurant (with id={restaurantId}) actual menu, return in header his url")
@@ -71,15 +71,13 @@ public class AdminMenuItemController {
     public ResponseEntity<MenuItemTo> createWithLocationToActualMenu(@Valid @RequestBody MenuItemTo menuItemTo, @PathVariable int restaurantId) {
         log.info("AdminMenuItemController#createWithLocationToActualMenu(menuItemTo:{}, restaurantId:{})", menuItemTo, restaurantId);
         checkNew(menuItemTo);
-        MenuItem created = menuItemRepository.save(MenuItemUtil.fromMenuItemToAndRestaurantId(menuItemTo,
-                checkNotFoundWithId(restaurantRepository.findById(restaurantId), restaurantId).getId()));
-        Menu actualMenu = menuRepository.findByDateAndRestaurantId(LocalDate.now(), restaurantId).orElseThrow();
-        actualMenu.getItems().add(created);
+        MenuItem created = saveMenuTo(menuItemTo, restaurantId);
+        getActualMenuItems(restaurantId).add(created);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(restaurantId, created.getId())
                 .toUri();
-        return ResponseEntity.created(uriOfNewResource).body(MenuItemUtil.toMenuItemTo(created));
+        return ResponseEntity.created(uriOfNewResource).body(toMenuItemTo(created));
     }
 
     @Operation(summary = "#updateInActualMenu", description = "Update menu item by id from the restaurant (with id={restaurantId}) actual menu")
@@ -92,10 +90,7 @@ public class AdminMenuItemController {
     public void updateInActualMenu(@Valid @RequestBody MenuItemTo menuItemTo, @PathVariable int id, @PathVariable int restaurantId) {
         log.info("AdminMenuItemController#updateInActualMenu(menuItemTo:{}, id:{}, restaurantId:{})", menuItemTo, id, restaurantId);
         assureIdConsistent(menuItemTo, id);
-        MenuItem updated = menuItemRepository.save(MenuItemUtil.fromMenuItemToAndRestaurantId(menuItemTo,
-                checkNotFoundWithId(restaurantRepository.findById(restaurantId), restaurantId).getId()));
-        List<MenuItem> actualItems = menuRepository.findByDateAndRestaurantId(LocalDate.now(), restaurantId).orElseThrow().getItems();
-        if (!actualItems.contains(updated)) actualItems.add(updated);
+        getActualMenuItems(restaurantId).add(saveMenuTo(menuItemTo, restaurantId));
     }
 
     @Operation(summary = "#deleteFromActualMenu", description = "Delete menu item by id from the restaurant (with id={restaurantId}) actual menu")
@@ -107,10 +102,16 @@ public class AdminMenuItemController {
     @Transactional
     public void deleteFromActualMenu(@PathVariable int id, @PathVariable int restaurantId) {
         log.info("AdminMenuItemController#delete(id:{}, restaurantId:{})", id, restaurantId);
-        Menu actualMenu = checkNotFoundWithMessage(menuRepository.findByDateAndRestaurantIdWithoutItems(LocalDate.now(), restaurantId),
-                String.format("Actual menu to restaurant with id=%d not found", restaurantId));
         MenuItem itemToRemove = checkNotFoundWithId(menuItemRepository.findFromActiveMenuByIdAndRestaurantId(id, restaurantId), id);
-        List<MenuItem> actualItems = actualMenu.getItems();
-        actualItems.remove(itemToRemove);
+        getActualMenuItems(restaurantId).remove(itemToRemove);
+    }
+
+    private Set<MenuItem> getActualMenuItems(int restaurantId) {
+        return checkNotFoundWithMessage(menuRepository.findByDateAndRestaurantId(LocalDate.now(), restaurantId),
+                String.format("Actual menu to restaurant with id=%d not found", restaurantId)).getItems();
+    }
+
+    private MenuItem saveMenuTo(MenuItemTo menuItemTo, int restaurantId) {
+        return menuItemRepository.save(fromMenuItemToAndRestaurantId(menuItemTo, checkNotFoundWithId(restaurantRepository.findById(restaurantId), restaurantId).getId()));
     }
 }

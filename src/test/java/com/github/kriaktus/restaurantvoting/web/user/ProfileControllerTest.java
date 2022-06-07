@@ -1,6 +1,11 @@
 package com.github.kriaktus.restaurantvoting.web.user;
 
+import com.github.kriaktus.restaurantvoting.model.User;
+import com.github.kriaktus.restaurantvoting.repository.UserRepository;
 import com.github.kriaktus.restaurantvoting.test_data.UserTestData;
+import com.github.kriaktus.restaurantvoting.to.UserTo;
+import com.github.kriaktus.restaurantvoting.util.JsonUtil;
+import com.github.kriaktus.restaurantvoting.util.UserUtil;
 import com.github.kriaktus.restaurantvoting.web.AbstractControllerTest;
 import com.github.kriaktus.restaurantvoting.web.GlobalExceptionHandler;
 import org.junit.jupiter.api.Test;
@@ -9,11 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import com.github.kriaktus.restaurantvoting.model.User;
-import com.github.kriaktus.restaurantvoting.repository.UserRepository;
-import com.github.kriaktus.restaurantvoting.to.UserTo;
-import com.github.kriaktus.restaurantvoting.util.JsonUtil;
-import com.github.kriaktus.restaurantvoting.util.UserUtil;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -106,6 +106,6 @@ class ProfileControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(updatedTo)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(content().string(containsString(GlobalExceptionHandler.EXCEPTION_DUPLICATE_EMAIL)));
+                .andExpect(content().string(containsString(GlobalExceptionHandler.EXCEPTION_USER_DUPLICATE_EMAIL)));
     }
 }

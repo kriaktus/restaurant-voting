@@ -5,7 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "menu")
@@ -30,9 +30,9 @@ public class Menu extends BaseEntity {
             joinColumns = {@JoinColumn(name = "menu_id")},
             inverseJoinColumns = {@JoinColumn(name = "menu_item_id")}
     )
-    private List<MenuItem> items;
+    private Set<MenuItem> items;
 
-    public Menu(Integer id, LocalDate menuDate, Integer restaurantId, List<MenuItem> items) {
+    public Menu(Integer id, LocalDate menuDate, Integer restaurantId, Set<MenuItem> items) {
         super(id);
         this.menuDate = menuDate;
         this.restaurantId = restaurantId;

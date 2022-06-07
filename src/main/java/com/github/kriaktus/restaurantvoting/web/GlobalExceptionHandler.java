@@ -1,5 +1,7 @@
 package com.github.kriaktus.restaurantvoting.web;
 
+import com.github.kriaktus.restaurantvoting.error.AppException;
+import com.github.kriaktus.restaurantvoting.util.validation.ValidationUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
@@ -15,8 +17,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import com.github.kriaktus.restaurantvoting.error.AppException;
-import com.github.kriaktus.restaurantvoting.util.validation.ValidationUtil;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.ZoneId;
@@ -33,10 +33,14 @@ import static org.springframework.boot.web.error.ErrorAttributeOptions.Include.M
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public static final String EXCEPTION_DUPLICATE_EMAIL = "User with this email already exists";
-    public static final String EXCEPTION_DUPLICATE_TITLE = "Dish with same title already exist in this restaurant";
-    public static final String EXCEPTION_DUPLICATE_NAME = "Restaurant with same name already exist";
-    public static final String EXCEPTION_ENTITY_NOT_EXIST = "Entity for update not exist";
+    public static final String EXCEPTION_USER_DUPLICATE_EMAIL = "User with this email already exists";
+    public static final String EXCEPTION_MENU_ITEM_DUPLICATE_NAME = "Menu item with this name already exists in actual menu";
+    public static final String EXCEPTION_MENU_ITEM_FROM_ANOTHER_RESTAURANT = "Menu item from another restaurant or does not exist";
+    public static final String EXCEPTION_MENU_ACTUAL_DATE = "Actual menu must contain actual date";
+    public static final String EXCEPTION_MENU_MENU_ITEM_HAS_ID = "Created menu must contain menu items without id";
+    public static final String EXCEPTION_MENU_MENU_ITEM_HAS_SAME_ID = "Menu items has same id";
+    public static final String EXCEPTION_MENU_MENU_ITEM_HAS_SAME_NAME = "Menu items has same name";
+    public static final String EXCEPTION_RESTAURANT_DUPLICATE_NAME = "Restaurant with same name already exist";
 
     private final ErrorAttributes errorAttributes;
 

@@ -6,6 +6,8 @@ import lombok.experimental.UtilityClass;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @UtilityClass
 public class MenuItemUtil {
@@ -14,10 +16,10 @@ public class MenuItemUtil {
         return new MenuItem(menuItemTo.getId(), menuItemTo.getName(), menuItemTo.getPrice(), restaurantId);
     }
 
-    public static List<MenuItem> fromMenuItemToAndRestaurantId(Collection<MenuItemTo> menuItemsTo, Integer restaurantId) {
+    public static Set<MenuItem> fromMenuItemToAndRestaurantId(Collection<MenuItemTo> menuItemsTo, Integer restaurantId) {
         return menuItemsTo.stream()
                 .map(menuItemTo -> MenuItemUtil.fromMenuItemToAndRestaurantId(menuItemTo, restaurantId))
-                .toList();
+                .collect(Collectors.toSet());
     }
 
     public static MenuItemTo toMenuItemTo(MenuItem menuItem) {

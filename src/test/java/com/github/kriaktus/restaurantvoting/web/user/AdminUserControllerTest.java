@@ -1,5 +1,8 @@
 package com.github.kriaktus.restaurantvoting.web.user;
 
+import com.github.kriaktus.restaurantvoting.model.Role;
+import com.github.kriaktus.restaurantvoting.model.User;
+import com.github.kriaktus.restaurantvoting.repository.UserRepository;
 import com.github.kriaktus.restaurantvoting.test_data.UserTestData;
 import com.github.kriaktus.restaurantvoting.web.AbstractControllerTest;
 import com.github.kriaktus.restaurantvoting.web.GlobalExceptionHandler;
@@ -11,9 +14,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import com.github.kriaktus.restaurantvoting.model.Role;
-import com.github.kriaktus.restaurantvoting.model.User;
-import com.github.kriaktus.restaurantvoting.repository.UserRepository;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -193,7 +193,7 @@ class AdminUserControllerTest extends AbstractControllerTest {
                 .content(UserTestData.jsonWithPassword(updated, "password")))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(content().string(containsString(GlobalExceptionHandler.EXCEPTION_DUPLICATE_EMAIL)));
+                .andExpect(content().string(containsString(GlobalExceptionHandler.EXCEPTION_USER_DUPLICATE_EMAIL)));
     }
 
     @Test
@@ -206,6 +206,6 @@ class AdminUserControllerTest extends AbstractControllerTest {
                 .content(UserTestData.jsonWithPassword(expected, "newPass")))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(content().string(containsString(GlobalExceptionHandler.EXCEPTION_DUPLICATE_EMAIL)));
+                .andExpect(content().string(containsString(GlobalExceptionHandler.EXCEPTION_USER_DUPLICATE_EMAIL)));
     }
 }
