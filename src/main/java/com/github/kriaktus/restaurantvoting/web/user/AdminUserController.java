@@ -1,5 +1,6 @@
 package com.github.kriaktus.restaurantvoting.web.user;
 
+import com.github.kriaktus.restaurantvoting.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import com.github.kriaktus.restaurantvoting.model.User;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -34,7 +34,7 @@ import static com.github.kriaktus.restaurantvoting.util.validation.ValidationUti
 @ApiResponses({
         @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
         @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)})
-@CacheConfig(cacheNames = "users")
+@CacheConfig(cacheNames = "user")
 public class AdminUserController extends AbstractUserController {
 
     static final String REST_URL = "/api/admin/users";
@@ -56,6 +56,7 @@ public class AdminUserController extends AbstractUserController {
             @ApiResponse(responseCode = "422", description = "Unprocessable Entity")})
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CacheEvict(allEntries = true)
     public void delete(@PathVariable int id) {
         super.delete(id);
     }
@@ -63,7 +64,6 @@ public class AdminUserController extends AbstractUserController {
     @Operation(summary = "#getAll", description = "Get all users")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = User.class))))
     @GetMapping
-    @Cacheable
     public List<User> getAll() {
         log.info("getAll");
         return repository.findAll(Sort.by(Sort.Direction.ASC, "name", "email"));

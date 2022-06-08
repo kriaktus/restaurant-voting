@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +32,6 @@ import static com.github.kriaktus.restaurantvoting.util.validation.ValidationUti
 @ApiResponses({
         @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
         @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)})
-@CacheConfig(cacheNames = "restaurants")
 public class AdminRestaurantController extends AbstractRestaurantController {
 
     static final String REST_URL = "/api/admin/restaurants";
@@ -66,6 +65,7 @@ public class AdminRestaurantController extends AbstractRestaurantController {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
+    @CacheEvict(cacheNames = {"restaurantTo", "restaurantWithMenuTo"}, allEntries = true)
     public void update(@Valid @RequestBody RestaurantTo restaurantTo, @PathVariable int id) {
         log.info("AdminRestaurantController#update(restaurantTo:{}, id:{})", restaurantTo, id);
         assureIdConsistent(restaurantTo, id);
@@ -78,6 +78,7 @@ public class AdminRestaurantController extends AbstractRestaurantController {
             @ApiResponse(responseCode = "422", description = "Unprocessable Entity")})
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CacheEvict(cacheNames = {"restaurantTo", "restaurantWithMenuTo"}, allEntries = true)
     public void delete(@PathVariable int id) {
         log.info("AdminRestaurantController#delete(id:{})", id);
         restaurantRepository.deleteExisted(id);

@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +28,6 @@ import static com.github.kriaktus.restaurantvoting.util.validation.ValidationUti
 @Slf4j
 @Tag(name = "RestaurantController")
 @ApiResponses(@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content))
-@CacheConfig(cacheNames = "restaurants")
 public class RestaurantController extends AbstractRestaurantController {
 
     static final String REST_URL = "/api/restaurants";
@@ -38,6 +37,7 @@ public class RestaurantController extends AbstractRestaurantController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = RestaurantTo.class))),
             @ApiResponse(responseCode = "422", description = "Unprocessable Entity", content = @Content)})
     @GetMapping("/{id}")
+    @Cacheable("restaurantTo")
     public RestaurantTo getActive(@PathVariable int id) {
         log.info("RestaurantController#getActive(id:{})", id);
         return toRestaurantTo(checkNotFoundWithMessage(restaurantRepository.findActiveById(id),
@@ -47,6 +47,7 @@ public class RestaurantController extends AbstractRestaurantController {
     @Operation(summary = "#getAllActive", description = "Get all active restaurants")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = RestaurantTo.class)))))
     @GetMapping
+    @Cacheable("restaurantTo")
     public List<RestaurantTo> getAllActive() {
         log.info("RestaurantController#getAllActive()");
         return toRestaurantTo(restaurantRepository.findAllActive());
@@ -57,6 +58,7 @@ public class RestaurantController extends AbstractRestaurantController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = RestaurantWithMenuTo.class))),
             @ApiResponse(responseCode = "422", description = "Unprocessable Entity", content = @Content)})
     @GetMapping("/{id}/with-actual-menu")
+    @Cacheable("restaurantWithMenuTo")
     public RestaurantWithMenuTo getWithActualMenu(@PathVariable int id) {
         log.info("RestaurantController#getWithActualMenu(id:{})", id);
         return toRestaurantWithMenuTo(checkNotFoundWithMessage(restaurantRepository.findByIdWithActualMenu(id),
@@ -66,6 +68,7 @@ public class RestaurantController extends AbstractRestaurantController {
     @Operation(summary = "#getAllWithActualMenu", description = "Get all active restaurants with actual menu")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = RestaurantWithMenuTo.class))))
     @GetMapping("/with-actual-menu")
+    @Cacheable("restaurantWithMenuTo")
     public List<RestaurantWithMenuTo> getAllWithActualMenu() {
         log.info("RestaurantController#getAllWithActualMenu()");
         return toRestaurantWithMenuTo(restaurantRepository.findAllWithActualMenu());

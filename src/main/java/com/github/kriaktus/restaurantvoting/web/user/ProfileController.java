@@ -1,5 +1,9 @@
 package com.github.kriaktus.restaurantvoting.web.user;
 
+import com.github.kriaktus.restaurantvoting.model.User;
+import com.github.kriaktus.restaurantvoting.to.UserTo;
+import com.github.kriaktus.restaurantvoting.util.UserUtil;
+import com.github.kriaktus.restaurantvoting.web.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,10 +20,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import com.github.kriaktus.restaurantvoting.model.User;
-import com.github.kriaktus.restaurantvoting.to.UserTo;
-import com.github.kriaktus.restaurantvoting.util.UserUtil;
-import com.github.kriaktus.restaurantvoting.web.AuthUser;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -31,7 +31,7 @@ import static com.github.kriaktus.restaurantvoting.util.validation.ValidationUti
 @RequestMapping(value = ProfileController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @Tag(name = "ProfileController")
-@CacheConfig(cacheNames = "users")
+@CacheConfig(cacheNames = "user")
 public class ProfileController extends AbstractUserController {
     static final String REST_URL = "/api/profile";
 
@@ -50,6 +50,7 @@ public class ProfileController extends AbstractUserController {
             @ApiResponse(responseCode = "401", description = "Unauthorized")})
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CacheEvict(allEntries = true)
     public void delete(@AuthenticationPrincipal AuthUser authUser) {
         super.delete(authUser.id());
     }

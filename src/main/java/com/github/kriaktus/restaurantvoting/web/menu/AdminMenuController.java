@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,6 +80,7 @@ public class AdminMenuController {
             @ApiResponse(responseCode = "422", description = "Unprocessable Entity", content = @Content)})
     @PostMapping
     @Transactional
+    @CacheEvict(cacheNames = {"restaurantTo", "restaurantWithMenuTo"}, allEntries = true)
     public ResponseEntity<MenuTo> createActualWithLocation(@Valid @RequestBody MenuTo menuTo, @PathVariable int restaurantId) {
         log.info("AdminMenuController#createActualWithLocation(menuTo:{}, restaurantId:{})", menuTo, restaurantId);
         checkNew(menuTo);
@@ -101,6 +103,7 @@ public class AdminMenuController {
     @PutMapping("/actual")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
+    @CacheEvict(cacheNames = {"restaurantWithMenuTo"}, allEntries = true)
     public void updateActual(@Valid @RequestBody MenuTo menuTo, @PathVariable int restaurantId) {
         log.info("AdminMenuController#updateActual(menuTo:{}, restaurantId:{})", menuTo, restaurantId);
         Optional<Menu> actualMenu = menuRepository.findByDateAndRestaurantIdWithoutItems(LocalDate.now(), restaurantId);
@@ -115,6 +118,7 @@ public class AdminMenuController {
             @ApiResponse(responseCode = "422", description = "Unprocessable Entity")})
     @DeleteMapping("/actual")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CacheEvict(cacheNames = {"restaurantTo", "restaurantWithMenuTo"}, allEntries = true)
     public void deleteActual(@PathVariable int restaurantId) {
         log.info("AdminMenuController#deleteActual(restaurantId:{})", restaurantId);
         checkModification(menuRepository.deleteByDateAndRestaurantId(LocalDate.now(), restaurantId));

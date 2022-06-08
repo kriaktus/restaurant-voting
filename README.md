@@ -1,4 +1,4 @@
-## Restaurant voting [![Codacy Badge](https://app.codacy.com/project/badge/Grade/18a5fa642d6048a3a77abc8df26ddc42)](https://www.codacy.com/gh/kriaktus/topjava2/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=kriaktus/topjava2&amp;utm_campaign=Badge_Grade)
+## Restaurant voting [![Codacy Badge](https://app.codacy.com/project/badge/Grade/18a5fa642d6048a3a77abc8df26ddc42)](https://www.codacy.com/gh/kriaktus/restaurant-voting/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=kriaktus/restaurant-voting&amp;utm_campaign=Badge_Grade)
 
 ### Graduation project from course [TopJava](https://javaops.ru/view/topjava)
 

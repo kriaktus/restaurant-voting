@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -68,6 +69,7 @@ public class AdminMenuItemController {
             @ApiResponse(responseCode = "422", description = "Unprocessable Entity", content = @Content)})
     @PostMapping
     @Transactional
+    @CacheEvict(cacheNames = "restaurantWithMenuTo", allEntries = true)
     public ResponseEntity<MenuItemTo> createWithLocationToActualMenu(@Valid @RequestBody MenuItemTo menuItemTo, @PathVariable int restaurantId) {
         log.info("AdminMenuItemController#createWithLocationToActualMenu(menuItemTo:{}, restaurantId:{})", menuItemTo, restaurantId);
         checkNew(menuItemTo);
@@ -87,6 +89,7 @@ public class AdminMenuItemController {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
+    @CacheEvict(cacheNames = "restaurantWithMenuTo", allEntries = true)
     public void updateInActualMenu(@Valid @RequestBody MenuItemTo menuItemTo, @PathVariable int id, @PathVariable int restaurantId) {
         log.info("AdminMenuItemController#updateInActualMenu(menuItemTo:{}, id:{}, restaurantId:{})", menuItemTo, id, restaurantId);
         assureIdConsistent(menuItemTo, id);
@@ -100,6 +103,7 @@ public class AdminMenuItemController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
+    @CacheEvict(cacheNames = "restaurantWithMenuTo", allEntries = true)
     public void deleteFromActualMenu(@PathVariable int id, @PathVariable int restaurantId) {
         log.info("AdminMenuItemController#deleteFromActualMenu(id:{}, restaurantId:{})", id, restaurantId);
         MenuItem itemToRemove = checkNotFoundWithId(menuItemRepository.findFromActiveMenuByIdAndRestaurantId(id, restaurantId), id);
