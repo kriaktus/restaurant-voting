@@ -42,25 +42,36 @@ values (1, 'Тартар из говядины с хумусом и пармез
        (3, 'Шея бычка в устричном соусе', 750);
 
 insert into MENU (menu_date, restaurant_id)
-values (current_date, 1),
+values (current_date-1, 1),
+       (current_date-1, 2),
+       (current_date-1, 3),
+       (current_date, 1),
        (current_date, 2),
        (current_date, 3);
 
 insert into MENU_MENU_ITEM (menu_id, menu_item_id)
-values (1, 1),
-       (1, 2),
+values (1, 2),
        (1, 3),
-       (1, 4),
-       (2, 5),
-       (2, 6),
        (2, 7),
        (2, 8),
        (2, 9),
-       (3, 10),
-       (3, 11),
        (3, 12),
        (3, 13),
-       (3, 14);
+       (3, 14),
+       (4, 1),
+       (4, 2),
+       (4, 3),
+       (4, 4),
+       (5, 5),
+       (5, 6),
+       (5, 7),
+       (5, 8),
+       (5, 9),
+       (6, 10),
+       (6, 11),
+       (6, 12),
+       (6, 13),
+       (6, 14);
 
 insert into VOTE (user_id, voting_date, restaurant_id)
 values (1, current_date-3, 1),

@@ -12,7 +12,7 @@ import static com.github.kriaktus.restaurantvoting.testdata.MenuItemTestData.*;
 
 public class MenuTestData {
     public static final MatcherFactory.Matcher<MenuTo> MENU_TO_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(MenuTo.class);
-    public static final int MENU_TO_1_ID = 1;
+    public static final int MENU_TO_1_ID = 4;
     public static final MenuTo menuTo1 = new MenuTo(MENU_TO_1_ID, LocalDate.now(), new ArrayList<>(List.of(menuItemTo1_1, menuItemTo1_2, menuItemTo1_3, menuItemTo1_4)));
 
     public static MenuTo getNewMenuTo() {

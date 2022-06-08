@@ -27,11 +27,4 @@ public class Vote extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @NotNull
     private Restaurant restaurant;
-
-    public Vote(Integer id, Integer userId, LocalDate votingDate, Restaurant restaurant) {
-        super(id);
-        this.userId = userId;
-        this.votingDate = votingDate;
-        this.restaurant = restaurant;
-    }
 }

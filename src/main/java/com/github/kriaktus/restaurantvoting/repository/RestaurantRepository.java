@@ -25,7 +25,7 @@ public interface RestaurantRepository extends BaseRepository<Restaurant> {
     Optional<Restaurant> findByIdWithActualMenu(@Param("id") int id);
 
     @EntityGraph(attributePaths = {"menu", "menu.items"})
-    @Query(value = "SELECT r FROM Restaurant r JOIN r.menu AS m JOIN m.items AS mi")
+    @Query(value = "SELECT r FROM Restaurant r JOIN r.menu AS m JOIN m.items AS mi WHERE m.menuDate = current_date")
     List<Restaurant> findAllWithActualMenu();
 
     Optional<Restaurant> getRestaurantByName(String name);

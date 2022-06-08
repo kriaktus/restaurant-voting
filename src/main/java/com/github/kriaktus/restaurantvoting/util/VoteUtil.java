@@ -13,10 +13,4 @@ public class VoteUtil {
     public static VoteTo toVoteTo(Vote vote) {
         return new VoteTo(vote.getId(), vote.getVotingDate(), vote.getRestaurant().getId());
     }
-
-    public static List<VoteTo> toVoteTo(Collection<Vote> votes) {
-        return votes.stream()
-                .map(VoteUtil::toVoteTo)
-                .toList();
-    }
 }

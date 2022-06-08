@@ -24,8 +24,4 @@ public class MenuTo extends BaseTo {
         this.menuDate = menuDate;
         this.items = items;
     }
-
-    public MenuTo(MenuTo menuTo) {
-        this(menuTo.id, menuTo.menuDate, menuTo.items);
-    }
 }
